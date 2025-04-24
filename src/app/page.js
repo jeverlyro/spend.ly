@@ -21,20 +21,7 @@ import {
 import { IoIosWallet } from "react-icons/io";
 import { FaUser } from "react-icons/fa";
 import { FaHouse } from "react-icons/fa6";
-
-const items = [
-  { icon: <FaHouse size={18} />, label: "Home", onClick: () => alert("Home!") },
-  {
-    icon: <IoIosWallet size={18} />,
-    label: "Wallet",
-    onClick: () => alert("Wallet!"),
-  },
-  {
-    icon: <FaUser size={18} />,
-    label: "Profile",
-    onClick: () => alert("Profile!"),
-  },
-];
+import { useRouter } from "next/navigation";
 
 const initialTransactions = [
   {
@@ -78,6 +65,21 @@ export default function Home() {
   const [filter, setFilter] = useState("all");
   const [month, setMonth] = useState("2023-09");
   const [displayMonth, setDisplayMonth] = useState("September 2023");
+  const router = useRouter();
+
+  const items = [
+    { icon: <FaHouse size={18} />, label: "Home", onClick: () => {} },
+    {
+      icon: <IoIosWallet size={18} />,
+      label: "Wallet",
+      onClick: () => router.push("/wallet"),
+    },
+    {
+      icon: <FaUser size={18} />,
+      label: "Profile",
+      onClick: () => router.push("/profile"),
+    },
+  ];
 
   const income = transactions
     .filter((t) => t.amount > 0)
@@ -149,7 +151,7 @@ export default function Home() {
             onClick={() => setShowModal(true)}
           >
             <FiPlus size={18} />
-            <span>Add Transaction</span>
+            <span className={styles.addText}>Add Transaction</span>
           </button>
           <div className={styles.filterSelectWrapper}>
             <select
@@ -361,7 +363,7 @@ function TransactionModal({ onClose, onAdd }) {
           </div>
 
           <button type="submit" className={styles.submitButton}>
-            <FiCheck size={18} />
+            <FiCheck size={21} />
             Add Transaction
           </button>
         </form>
