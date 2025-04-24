@@ -151,19 +151,22 @@ export default function Home() {
             <FiPlus size={18} />
             <span>Add Transaction</span>
           </button>
-          <select
-            className={styles.filterSelect}
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="all">All Categories</option>
-            <option value="food">Food</option>
-            <option value="income">Income</option>
-            <option value="travel">Travel</option>
-            <option value="bills">Bills</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="shopping">Shopping</option>
-          </select>
+          <div className={styles.filterSelectWrapper}>
+            <select
+              className={styles.filterSelect}
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              title={filter === "all" ? "All Categories" : filter}
+            >
+              <option value="all">All Categories</option>
+              <option value="food">Food</option>
+              <option value="income">Income</option>
+              <option value="travel">Travel</option>
+              <option value="bills">Bills</option>
+              <option value="entertainment">Entertainment</option>
+              <option value="shopping">Shopping</option>
+            </select>
+          </div>
           <button
             className={styles.datePickerButton}
             onClick={() => setShowCalendarModal(true)}
