@@ -120,7 +120,7 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.header}>
           <BlurText
-            text="Track you spending with Spend.ly"
+            text="Hello !"
             delay={150}
             animateBy="words"
             direction="top"

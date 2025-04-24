@@ -406,36 +406,80 @@
   animation: selectPulse 0.3s ease-out;
 }
 
-/* Transactions List */
+/* Transactions List - Enhanced styling */
 .transactions {
   background-color: white;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 1.5rem;
+  transition: all var(--transition-standard);
+}
+
+.transactions:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 .transactions h2 {
   font-size: 1.125rem;
   margin: 0 0 1.5rem 0;
   color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transactions h2::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(to bottom, #0070f3, #00d2ff);
+  border-radius: 2px;
+}
+
+.transactionsList {
+  max-height: 450px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.transactionsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transactionsList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.transactionsList::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
 }
 
 .transaction {
   display: flex;
   align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid #f1f5f9;
-  transition: background-color var(--transition-standard);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: all var(--transition-standard);
   animation: slideIn 0.3s ease-out;
+  cursor: pointer;
+}
+
+.transaction:last-child {
+  margin-bottom: 0;
 }
 
 .transaction:hover {
   background-color: var(--gray-alpha-100);
+  transform: translateX(4px);
 }
 
 .transactionIcon {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background-color: #f8fafc;
   border-radius: 50%;
   display: flex;
@@ -443,13 +487,44 @@
   justify-content: center;
   margin-right: 1rem;
   color: #64748b;
-  transition: transform var(--transition-standard),
-    background-color var(--transition-standard);
+  transition: all var(--transition-standard);
+  flex-shrink: 0;
 }
 
 .transaction:hover .transactionIcon {
   transform: scale(1.1);
   background-color: #f1f5f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.transaction.food .transactionIcon {
+  color: #f59e0b;
+  background-color: #fef3c7;
+}
+
+.transaction.bills .transactionIcon {
+  color: #3b82f6;
+  background-color: #dbeafe;
+}
+
+.transaction.income .transactionIcon {
+  color: #10b981;
+  background-color: #d1fae5;
+}
+
+.transaction.shopping .transactionIcon {
+  color: #8b5cf6;
+  background-color: #ede9fe;
+}
+
+.transaction.travel .transactionIcon {
+  color: #ef4444;
+  background-color: #fee2e2;
+}
+
+.transaction.entertainment .transactionIcon {
+  color: #ec4899;
+  background-color: #fce7f3;
 }
 
 .transactionDetails {
@@ -457,33 +532,64 @@
 }
 
 .transactionDetails h4 {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   margin: 0 0 0.25rem 0;
   color: #0f172a;
+  font-weight: 600;
 }
 
 .transactionDetails p {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #64748b;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.transactionDetails p::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
 }
 
 .transactionAmount {
   font-family: var(--font-geist-mono);
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #ef4444;
   margin: 0;
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  background-color: #fef2f2;
+  transition: all var(--transition-standard);
+}
+
+.transaction:hover .transactionAmount {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .transactionAmount.income {
   color: #10b981;
+  background-color: #f0fdf4;
 }
 
 .emptyState {
   text-align: center;
-  padding: 2rem 0;
+  padding: 3rem 0;
   color: #64748b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.emptyState svg {
+  color: #cbd5e1;
+  font-size: 2rem;
 }
 
 .footer {
@@ -732,8 +838,8 @@
 
 .blurText {
   font-weight: 600;
-  font-size: 36px;
-  max-width: 700px;
+  font-size: 32px;
+  max-width: 550px;
   margin-bottom: 50px;
 }
 
