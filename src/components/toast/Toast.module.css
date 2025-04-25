@@ -1,0 +1,134 @@
+.toastContainer {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: flex;
+  justify-content: center;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateX(-50%);
+}
+
+.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-20px);
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 320px;
+  max-width: 90vw;
+  border-left: 4px solid #0070f3;
+  transform: translateZ(0);
+  backdrop-filter: blur(10px);
+}
+
+.iconContainer {
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+}
+
+.message {
+  flex: 1;
+  font-size: 15px;
+  color: #1e293b;
+  font-weight: 500;
+  font-family: var(--font-geist-sans);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  padding: 6px;
+  margin-left: 8px;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #334155;
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: rotate(90deg);
+}
+
+.info {
+  border-left-color: #0070f3;
+}
+
+.info .iconContainer {
+  color: #0070f3;
+  filter: drop-shadow(0 0 6px rgba(0, 112, 243, 0.4));
+}
+
+.success {
+  border-left-color: #10b981;
+}
+
+.success .iconContainer {
+  color: #10b981;
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4));
+}
+
+.error {
+  border-left-color: #ef4444;
+}
+
+.error .iconContainer {
+  color: #ef4444;
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.4));
+}
+
+/* Enhanced animations */
+@keyframes slideInDown {
+  0% {
+    transform: translateY(-30px) translateX(-50%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(10px) translateX(-50%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInCenter {
+  0% {
+    transform: translateX(-50%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.05);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.visible {
+  animation: slideInDown 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.visible .toast {
+  animation: pulse 2s ease infinite;
+}

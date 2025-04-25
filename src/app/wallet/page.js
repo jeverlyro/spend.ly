@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
@@ -68,6 +68,20 @@ const initialAccounts = [
 export default function WalletPage() {
   const [accounts, setAccounts] = useState(initialAccounts);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  // Check authentication
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
+
+    setIsLoading(false);
+  }, [router]);
 
   const totalBalance = accounts.reduce(
     (sum, account) => sum + account.balance,
@@ -83,6 +97,15 @@ export default function WalletPage() {
     setAccounts([...accounts, newAccount]);
     setShowModal(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>

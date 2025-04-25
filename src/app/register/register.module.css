@@ -6,16 +6,31 @@
   background-color: #f8f9fa;
   padding: 1rem;
   font-family: var(--font-geist-sans);
+  /* Add slight gradient background */
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .formCard {
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
   width: 100%;
   max-width: 420px;
   position: relative;
+  /* Add entrance animation */
+  animation: cardEntrance 0.6s ease-out;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .backButton {
@@ -30,17 +45,31 @@
   height: 36px;
   border-radius: 50%;
   background-color: #f8f9fa;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .backButton:hover {
   background-color: #e2e8f0;
+  transform: translateX(-3px);
 }
 
 .logoContainer {
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
+  /* Add logo animation */
+  animation: logoFloat 1s ease-out;
+}
+
+@keyframes logoFloat {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .title {
@@ -49,6 +78,8 @@
   color: #0f172a;
   margin: 0;
   text-align: center;
+  animation: fadeIn 0.5s ease-out 0.1s forwards;
+  opacity: 0;
 }
 
 .subtitle {
@@ -57,6 +88,8 @@
   margin-top: 0.5rem;
   margin-bottom: 2rem;
   text-align: center;
+  animation: fadeIn 0.5s ease-out 0.2s forwards;
+  opacity: 0;
 }
 
 .form {
@@ -65,6 +98,36 @@
 
 .inputGroup {
   margin-bottom: 1.5rem;
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* Staggered animation for form inputs */
+.inputGroup:nth-child(1) {
+  animation-delay: 0.3s;
+}
+
+.inputGroup:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.inputGroup:nth-child(3) {
+  animation-delay: 0.5s;
+}
+
+.inputGroup:nth-child(4) {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .label {
@@ -85,6 +148,9 @@
   left: 1rem;
   transform: translateY(-50%);
   color: #94a3b8;
+  transition: color 0.2s ease;
+  pointer-events: none; /* Prevents icon from interfering with input focus */
+  z-index: 2; /* Ensures icon stays above input */
 }
 
 .input {
@@ -95,13 +161,22 @@
   font-family: var(--font-geist-sans);
   font-size: 0.875rem;
   color: #0f172a;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
   background-color: white;
+  position: relative;
+  z-index: 1;
 }
 
 .input:focus {
   outline: none;
   border-color: #0070f3;
+  box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Fix for icon color change on focus */
+.input:focus + .inputIcon {
+  color: #0070f3;
 }
 
 .input::placeholder {
@@ -122,6 +197,8 @@
   color: #64748b;
   margin-top: 0.5rem;
   margin-bottom: 0;
+  animation: fadeIn 0.5s ease-out 0.7s forwards;
+  opacity: 0;
 }
 
 .submitButton {
@@ -134,18 +211,61 @@
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
   font-family: var(--font-geist-sans);
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-out 0.7s forwards;
+  opacity: 0;
 }
 
 .submitButton:hover {
   background-color: #0060df;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 112, 243, 0.2);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 112, 243, 0.2);
+}
+
+/* Add ripple effect for buttons */
+.submitButton::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.submitButton:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(30, 30);
+    opacity: 0;
+  }
 }
 
 .divider {
   display: flex;
   align-items: center;
   margin: 1.5rem 0;
+  animation: fadeIn 0.5s ease-out 0.8s forwards;
+  opacity: 0;
 }
 
 .divider::before,
@@ -176,12 +296,20 @@
   font-weight: 500;
   color: #334155;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
   font-family: var(--font-geist-sans);
+  animation: fadeIn 0.5s ease-out 0.9s forwards;
+  opacity: 0;
 }
 
 .googleButton:hover {
   background-color: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.googleButton:active {
+  transform: translateY(0);
 }
 
 .loginText {
@@ -190,10 +318,17 @@
   text-align: center;
   margin-top: 1.5rem;
   margin-bottom: 0;
+  animation: fadeIn 0.5s ease-out 1s forwards;
+  opacity: 0;
 }
 
 .loginLink {
   color: #0070f3;
   font-weight: 500;
   text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.loginLink:hover {
+  text-decoration: underline;
 }

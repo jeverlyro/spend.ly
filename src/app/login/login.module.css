@@ -6,16 +6,30 @@
   background-color: #f8f9fa;
   padding: 1rem;
   font-family: var(--font-geist-sans);
+  /* Add slight gradient background */
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .formCard {
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
   width: 100%;
   max-width: 420px;
   position: relative;
+  animation: cardEntrance 0.6s ease-out;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .backButton {
@@ -30,25 +44,42 @@
   height: 36px;
   border-radius: 50%;
   background-color: #f8f9fa;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .backButton:hover {
   background-color: #e2e8f0;
+  transform: translateX(-3px);
 }
 
 .logoContainer {
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
+  /* Add logo animation */
+  animation: logoFloat 1s ease-out;
 }
 
+@keyframes logoFloat {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add animations to title and subtitle */
 .title {
   font-size: 1.5rem;
   font-weight: 700;
   color: #0f172a;
   margin: 0;
   text-align: center;
+  animation: fadeIn 0.5s ease-out 0.1s forwards;
+  opacity: 0;
 }
 
 .subtitle {
@@ -57,6 +88,8 @@
   margin-top: 0.5rem;
   margin-bottom: 2rem;
   text-align: center;
+  animation: fadeIn 0.5s ease-out 0.2s forwards;
+  opacity: 0;
 }
 
 .form {
@@ -65,6 +98,27 @@
 
 .inputGroup {
   margin-bottom: 1.5rem;
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.inputGroup:nth-child(1) {
+  animation-delay: 0.3s;
+}
+
+.inputGroup:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .labelRow {
@@ -74,16 +128,27 @@
   margin-bottom: 0.5rem;
 }
 
+.labelRow .label {
+  margin-bottom: 0;
+}
+
 .label {
   font-size: 0.875rem;
   font-weight: 500;
   color: #334155;
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 .forgotLink {
   font-size: 0.75rem;
   color: #0070f3;
   text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
 }
 
 .inputWithIcon {
@@ -96,6 +161,9 @@
   left: 1rem;
   transform: translateY(-50%);
   color: #94a3b8;
+  transition: color 0.2s ease;
+  pointer-events: none; /* This prevents the icon from interfering with input focus */
+  z-index: 2; /* Ensure icon stays above the input */
 }
 
 .input {
@@ -106,13 +174,22 @@
   font-family: var(--font-geist-sans);
   font-size: 0.875rem;
   color: #0f172a;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
   background-color: white;
+  position: relative;
+  z-index: 1;
 }
 
 .input:focus {
   outline: none;
   border-color: #0070f3;
+  box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Ensure the icon changes color on focus but doesn't disappear */
+.input:focus + .inputIcon {
+  color: #0070f3;
 }
 
 .input::placeholder {
@@ -127,6 +204,7 @@
   transition: background-color 5000s ease-in-out 0s;
 }
 
+/* Add animation to submit button */
 .submitButton {
   width: 100%;
   padding: 0.875rem;
@@ -137,18 +215,62 @@
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
   font-family: var(--font-geist-sans);
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-out 0.5s forwards;
+  opacity: 0;
 }
 
 .submitButton:hover {
   background-color: #0060df;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 112, 243, 0.2);
 }
 
+.submitButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 112, 243, 0.2);
+}
+
+/* Add ripple effect for buttons */
+.submitButton::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.submitButton:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(30, 30);
+    opacity: 0;
+  }
+}
+
+/* Add animation to divider */
 .divider {
   display: flex;
   align-items: center;
   margin: 1.5rem 0;
+  animation: fadeIn 0.5s ease-out 0.6s forwards;
+  opacity: 0;
 }
 
 .divider::before,
@@ -165,6 +287,7 @@
   color: #64748b;
 }
 
+/* Add animation to Google button */
 .googleButton {
   display: flex;
   align-items: center;
@@ -179,24 +302,90 @@
   font-weight: 500;
   color: #334155;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
   font-family: var(--font-geist-sans);
+  animation: fadeIn 0.5s ease-out 0.7s forwards;
+  opacity: 0;
 }
 
 .googleButton:hover {
   background-color: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+.googleButton:active {
+  transform: translateY(0);
+}
+
+/* Add animation to signup text */
 .signupText {
   font-size: 0.875rem;
   color: #64748b;
   text-align: center;
   margin-top: 1.5rem;
   margin-bottom: 0;
+  animation: fadeIn 0.5s ease-out 0.8s forwards;
+  opacity: 0;
 }
 
 .signupLink {
   color: #0070f3;
   font-weight: 500;
   text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.signupLink:hover {
+  text-decoration: underline;
+}
+
+/* Add this to your existing login.module.css */
+
+.errorAlert {
+  background-color: #fef2f2;
+  border-left: 3px solid #ef4444;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demoButton {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-geist-sans);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.5s ease-out 0.75s forwards;
+  opacity: 0;
+}
+
+.demoButton:hover {
+  background-color: #f1f5f9;
+  color: #334155;
 }

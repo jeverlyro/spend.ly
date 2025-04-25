@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
+import { useToast } from "@/components/toast/toastProvider";
 import {
   FiUser,
-  FiSettings,
   FiMoon,
   FiSun,
   FiBell,
@@ -21,37 +22,85 @@ import { IoIosWallet } from "react-icons/io";
 import { FaUser } from "react-icons/fa";
 import { FaHouse } from "react-icons/fa6";
 
-const items = [
-  {
-    icon: <FaHouse size={18} />,
-    label: "Home",
-    onClick: () => (window.location.href = "/"),
-  },
-  {
-    icon: <IoIosWallet size={18} />,
-    label: "Wallet",
-    onClick: () => (window.location.href = "/wallet"),
-  },
-  {
-    icon: <FaUser size={18} />,
-    label: "Profile",
-    onClick: () => {}, // current page
-  },
-];
-
 export default function ProfilePage() {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState("");
+  const { addToast } = useToast();
+  const router = useRouter();
+
+  // Check for authentication
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
+
+    // Get user email from localStorage
+    const email = localStorage.getItem("userEmail") || "user@example.com";
+    setUserEmail(email);
+
+    setIsLoading(false);
+  }, [router]);
+
+  const items = [
+    {
+      icon: <FaHouse size={18} />,
+      label: "Home",
+      onClick: () => router.push("/dashboard"),
+    },
+    {
+      icon: <IoIosWallet size={18} />,
+      label: "Wallet",
+      onClick: () => router.push("/wallet"),
+    },
+    {
+      icon: <FaUser size={18} />,
+      label: "Profile",
+      onClick: () => {}, // current page
+    },
+  ];
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+    addToast(`Dark mode ${darkMode ? "disabled" : "enabled"}`, "info", 3000);
     // In a real app, you would apply the theme change
   };
 
   const toggleNotifications = () => {
     setNotifications(!notifications);
+    addToast(
+      `Notifications ${notifications ? "disabled" : "enabled"}`,
+      "info",
+      3000
+    );
   };
+
+  const handleLogout = () => {
+    // Clear localStorage values
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userEmail");
+
+    addToast("Logging out...", "info", 2000);
+
+    // Redirect to login page
+    setTimeout(() => {
+      router.push("/login");
+    }, 1000);
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
@@ -72,8 +121,8 @@ export default function ProfilePage() {
               <FiUser size={32} />
             </div>
             <div className={styles.profileInfo}>
-              <h2>Alex Johnson</h2>
-              <p>alex.johnson@example.com</p>
+              <h2>{userEmail.split("@")[0]}</h2>
+              <p>{userEmail}</p>
             </div>
           </div>
 
@@ -159,7 +208,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <button className={styles.logoutButton}>
+        <button className={styles.logoutButton} onClick={handleLogout}>
           <FiLogOut size={18} />
           <span>Logout</span>
         </button>
@@ -186,10 +235,16 @@ export default function ProfilePage() {
 function ProfileEditModal({ onClose }) {
   const [name, setName] = useState("Alex Johnson");
   const [email, setEmail] = useState("alex.johnson@example.com");
+  const { addToast } = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // In a real app, update the user profile
+    addToast(
+      `Profile updated successfully! Name changed to ${name}`,
+      "success",
+      3000
+    );
     onClose();
   };
 

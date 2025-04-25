@@ -1464,12 +1464,14 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: #0f172a;
+  font-family: var(--font-geist-sans);
 }
 
 .profileInfo p {
   margin: 0.25rem 0 0;
   font-size: 0.875rem;
   color: #64748b;
+  font-family: var(--font-geist-sans);
 }
 
 .editProfileButton {
@@ -1483,6 +1485,7 @@
   border-radius: 0.75rem;
   cursor: pointer;
   transition: all var(--transition-standard);
+  font-family: var(--font-geist-sans);
 }
 
 .editProfileButton:hover {
@@ -1507,6 +1510,7 @@
   border-radius: 0.75rem;
   cursor: pointer;
   transition: all var(--transition-standard);
+  font-family: var(--font-geist-sans);
 }
 
 .logoutButton:hover {
@@ -1546,4 +1550,33 @@
 
 .toggleActive .toggleHandle {
   left: 24px;
+}
+
+/* Add these styles to your existing page.module.css file */
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #64748b;
+  font-family: var(--font-geist-sans);
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 1rem;
+  border: 3px solid rgba(0, 112, 243, 0.1);
+  border-radius: 50%;
+  border-top-color: #0070f3;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
