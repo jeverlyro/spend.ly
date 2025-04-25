@@ -6,12 +6,10 @@ import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
 import { useToast } from "@/components/toast/toastProvider";
+import SettingsModal from "@/components/settings/SettingsModal";
 import {
   FiUser,
-  FiMoon,
-  FiSun,
-  FiBell,
-  FiLock,
+  FiInfo,
   FiHelpCircle,
   FiLogOut,
   FiChevronRight,
@@ -23,9 +21,9 @@ import { FaUser } from "react-icons/fa";
 import { FaHouse } from "react-icons/fa6";
 
 export default function ProfilePage() {
-  const [darkMode, setDarkMode] = useState(false);
-  const [notifications, setNotifications] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [settingsType, setSettingsType] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState("");
   const { addToast } = useToast();
@@ -65,19 +63,9 @@ export default function ProfilePage() {
     },
   ];
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    addToast(`Dark mode ${darkMode ? "disabled" : "enabled"}`, "info", 3000);
-    // In a real app, you would apply the theme change
-  };
-
-  const toggleNotifications = () => {
-    setNotifications(!notifications);
-    addToast(
-      `Notifications ${notifications ? "disabled" : "enabled"}`,
-      "info",
-      3000
-    );
+  const openSettingsModal = (type) => {
+    setSettingsType(type);
+    setShowSettingsModal(true);
   };
 
   const handleLogout = () => {
@@ -137,63 +125,10 @@ export default function ProfilePage() {
         <div className={styles.transactions} style={{ marginTop: "2rem" }}>
           <h2>Settings</h2>
 
-          <div className={`${styles.transaction} ${styles.settingItem}`}>
-            <div
-              className={styles.transactionIcon}
-              style={{ color: "#0070f3", background: "#0070f315" }}
-            >
-              {darkMode ? <FiMoon size={20} /> : <FiSun size={20} />}
-            </div>
-            <div className={styles.transactionDetails}>
-              <h4>Dark Mode</h4>
-              <p>Change app appearance</p>
-            </div>
-            <div
-              className={`${styles.toggle} ${
-                darkMode ? styles.toggleActive : ""
-              }`}
-              onClick={toggleDarkMode}
-            >
-              <div className={styles.toggleHandle}></div>
-            </div>
-          </div>
-
-          <div className={`${styles.transaction} ${styles.settingItem}`}>
-            <div
-              className={styles.transactionIcon}
-              style={{ color: "#ef4444", background: "#ef444415" }}
-            >
-              <FiBell size={20} />
-            </div>
-            <div className={styles.transactionDetails}>
-              <h4>Notifications</h4>
-              <p>Enable push notifications</p>
-            </div>
-            <div
-              className={`${styles.toggle} ${
-                notifications ? styles.toggleActive : ""
-              }`}
-              onClick={toggleNotifications}
-            >
-              <div className={styles.toggleHandle}></div>
-            </div>
-          </div>
-
-          <div className={`${styles.transaction} ${styles.settingItem}`}>
-            <div
-              className={styles.transactionIcon}
-              style={{ color: "#10b981", background: "#10b98115" }}
-            >
-              <FiLock size={20} />
-            </div>
-            <div className={styles.transactionDetails}>
-              <h4>Security</h4>
-              <p>Manage account security</p>
-            </div>
-            <FiChevronRight size={20} color="#64748b" />
-          </div>
-
-          <div className={`${styles.transaction} ${styles.settingItem}`}>
+          <div
+            className={`${styles.transaction} ${styles.settingItem}`}
+            onClick={() => openSettingsModal("help")}
+          >
             <div
               className={styles.transactionIcon}
               style={{ color: "#8b5cf6", background: "#8b5cf615" }}
@@ -203,6 +138,23 @@ export default function ProfilePage() {
             <div className={styles.transactionDetails}>
               <h4>Help & Support</h4>
               <p>Get assistance</p>
+            </div>
+            <FiChevronRight size={20} color="#64748b" />
+          </div>
+
+          <div
+            className={`${styles.transaction} ${styles.settingItem}`}
+            onClick={() => openSettingsModal("about")}
+          >
+            <div
+              className={styles.transactionIcon}
+              style={{ color: "#10b981", background: "#10b98115" }}
+            >
+              <FiInfo size={20} />
+            </div>
+            <div className={styles.transactionDetails}>
+              <h4>About App</h4>
+              <p>Version 1.0.0</p>
             </div>
             <FiChevronRight size={20} color="#64748b" />
           </div>
@@ -224,6 +176,13 @@ export default function ProfilePage() {
       </div>
 
       {showModal && <ProfileEditModal onClose={() => setShowModal(false)} />}
+
+      {showSettingsModal && (
+        <SettingsModal
+          onClose={() => setShowSettingsModal(false)}
+          setting={settingsType}
+        />
+      )}
 
       <footer className={styles.footer}>
         <p>&copy; 2023 Spend.ly - Track your spending</p>
