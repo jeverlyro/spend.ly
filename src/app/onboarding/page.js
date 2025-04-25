@@ -9,18 +9,21 @@ import { FiArrowRight, FiChevronRight, FiChevronLeft } from "react-icons/fi";
 
 const slides = [
   {
-    title: "Track Your Expenses",
-    description: "Easily log and categorize all your spending in one place",
+    title: "Lacak Pengeluaran Anda",
+    description:
+      "Dengan mudah catat dan kategorikan semua pengeluaran Anda dalam satu tempat",
     image: "/expense-tracking.svg",
   },
   {
-    title: "Visualize Your Finances",
-    description: "See where your money goes with helpful charts and summaries",
+    title: "Visualisasikan Keuangan Anda",
+    description:
+      "Lihat kemana uang Anda mengalir dengan grafik dan ringkasan yang membantu",
     image: "/finance-chart.svg",
   },
   {
-    title: "Set Financial Goals",
-    description: "Create budgets and save for what matters most to you",
+    title: "Tetapkan Tujuan Keuangan",
+    description:
+      "Buat anggaran dan tabung untuk hal yang paling penting bagi Anda",
     image: "/goals.svg",
   },
 ];
@@ -82,7 +85,7 @@ export default function Onboarding() {
     <div className={styles.container}>
       <div className={styles.onboardingCard}>
         <div className={styles.logoContainer}>
-          <Image src="/logo.svg" alt="Spend.ly Logo" width={40} height={40} />
+          <Image src="/logo.svg" alt="Logo Spend.ly" width={40} height={40} />
           <h1 className={styles.logoText}>spend.ly</h1>
         </div>
 
@@ -138,7 +141,7 @@ export default function Onboarding() {
               className={styles.getStartedButton}
               onClick={completeOnboarding}
             >
-              Get Started <FiArrowRight size={18} />
+              Mulai Sekarang <FiArrowRight size={18} />
             </Link>
           )}
         </div>

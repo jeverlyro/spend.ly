@@ -48,17 +48,17 @@ export default function ProfilePage() {
   const items = [
     {
       icon: <FaHouse size={18} />,
-      label: "Home",
+      label: "Beranda",
       onClick: () => router.push("/dashboard"),
     },
     {
       icon: <IoIosWallet size={18} />,
-      label: "Wallet",
+      label: "Dompet",
       onClick: () => router.push("/wallet"),
     },
     {
       icon: <FaUser size={18} />,
-      label: "Profile",
+      label: "Profil",
       onClick: () => {}, // current page
     },
   ];
@@ -73,7 +73,7 @@ export default function ProfilePage() {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userEmail");
 
-    addToast("Logging out...", "info", 2000);
+    addToast("Keluar...", "info", 2000);
 
     // Redirect to login page
     setTimeout(() => {
@@ -85,7 +85,7 @@ export default function ProfilePage() {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
-        <p>Loading...</p>
+        <p>Memuat...</p>
       </div>
     );
   }
@@ -95,7 +95,7 @@ export default function ProfilePage() {
       <main className={styles.main}>
         <div className={styles.header}>
           <BlurText
-            text="Your Profile"
+            text="Profil Anda"
             delay={150}
             animateBy="words"
             direction="top"
@@ -118,12 +118,12 @@ export default function ProfilePage() {
             className={styles.editProfileButton}
             onClick={() => setShowModal(true)}
           >
-            Edit Profile
+            Edit Profil
           </button>
         </div>
 
         <div className={styles.transactions} style={{ marginTop: "2rem" }}>
-          <h2>Settings</h2>
+          <h2>Pengaturan</h2>
 
           <div
             className={`${styles.transaction} ${styles.settingItem}`}
@@ -136,8 +136,8 @@ export default function ProfilePage() {
               <FiHelpCircle size={20} />
             </div>
             <div className={styles.transactionDetails}>
-              <h4>Help & Support</h4>
-              <p>Get assistance</p>
+              <h4>Bantuan & Dukungan</h4>
+              <p>Dapatkan bantuan</p>
             </div>
             <FiChevronRight size={20} color="#64748b" />
           </div>
@@ -153,8 +153,8 @@ export default function ProfilePage() {
               <FiInfo size={20} />
             </div>
             <div className={styles.transactionDetails}>
-              <h4>About App</h4>
-              <p>Version 1.0.0</p>
+              <h4>Tentang Aplikasi</h4>
+              <p>Versi 1.0.0</p>
             </div>
             <FiChevronRight size={20} color="#64748b" />
           </div>
@@ -162,7 +162,7 @@ export default function ProfilePage() {
 
         <button className={styles.logoutButton} onClick={handleLogout}>
           <FiLogOut size={18} />
-          <span>Logout</span>
+          <span>Keluar</span>
         </button>
       </main>
 
@@ -185,7 +185,7 @@ export default function ProfilePage() {
       )}
 
       <footer className={styles.footer}>
-        <p>&copy; 2023 Spend.ly - Track your spending</p>
+        <p>&copy; 2023 Spend.ly - Lacak pengeluaran Anda</p>
       </footer>
     </div>
   );
@@ -200,7 +200,7 @@ function ProfileEditModal({ onClose }) {
     e.preventDefault();
     // In a real app, update the user profile
     addToast(
-      `Profile updated successfully! Name changed to ${name}`,
+      `Profil berhasil diperbarui! Nama diubah menjadi ${name}`,
       "success",
       3000
     );
@@ -214,11 +214,11 @@ function ProfileEditModal({ onClose }) {
           <FiX size={24} />
         </button>
 
-        <h2>Edit Profile</h2>
+        <h2>Edit Profil</h2>
 
         <form onSubmit={handleSubmit}>
           <div className={styles.modalGroup}>
-            <label htmlFor="name">Full Name</label>
+            <label htmlFor="name">Nama Lengkap</label>
             <input
               id="name"
               type="text"
@@ -230,7 +230,7 @@ function ProfileEditModal({ onClose }) {
           </div>
 
           <div className={styles.modalGroup}>
-            <label htmlFor="email">Email Address</label>
+            <label htmlFor="email">Alamat Email</label>
             <input
               id="email"
               type="email"
@@ -243,7 +243,7 @@ function ProfileEditModal({ onClose }) {
 
           <button type="submit" className={styles.submitButton}>
             <FiCheck size={21} />
-            Save Changes
+            Simpan Perubahan
           </button>
         </form>
       </div>

@@ -23,17 +23,17 @@ import { useRouter } from "next/navigation";
 const items = [
   {
     icon: <FaHouse size={18} />,
-    label: "Home",
+    label: "Beranda",
     onClick: () => (window.location.href = "/"),
   },
   {
     icon: <IoIosWallet size={18} />,
-    label: "Wallet",
+    label: "Dompet",
     onClick: () => {}, // current page
   },
   {
     icon: <FaUser size={18} />,
-    label: "Profile",
+    label: "Profil",
     onClick: () => (window.location.href = "/profile"),
   },
 ];
@@ -41,24 +41,24 @@ const items = [
 const initialAccounts = [
   {
     id: 1,
-    name: "Main Checking",
-    type: "Checking",
+    name: "Rekening Utama",
+    type: "Giro",
     balance: 2350.75,
     icon: <FiDollarSign size={20} />,
     color: "#0070f3",
   },
   {
     id: 2,
-    name: "Savings Account",
-    type: "Savings",
+    name: "Tabungan",
+    type: "Tabungan",
     balance: 8750.42,
     icon: <FiBarChart2 size={20} />,
     color: "#10b981",
   },
   {
     id: 3,
-    name: "Credit Card",
-    type: "Credit",
+    name: "Kartu Kredit",
+    type: "Kredit",
     balance: -450.25,
     icon: <FiCreditCard size={20} />,
     color: "#ef4444",
@@ -102,7 +102,7 @@ export default function WalletPage() {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
-        <p>Loading...</p>
+        <p>Memuat...</p>
       </div>
     );
   }
@@ -112,7 +112,7 @@ export default function WalletPage() {
       <main className={styles.main}>
         <div className={styles.header}>
           <BlurText
-            text="Your Wallet"
+            text="Dompet Anda"
             delay={150}
             animateBy="words"
             direction="top"
@@ -122,7 +122,7 @@ export default function WalletPage() {
 
         <div className={styles.summary}>
           <div className={styles.summaryItem} style={{ gridColumn: "1 / -1" }}>
-            <h3>Total Balance</h3>
+            <h3>Total Saldo</h3>
             <p className={totalBalance >= 0 ? styles.balance : styles.expense}>
               ${Math.abs(totalBalance).toFixed(2)}
             </p>
@@ -136,12 +136,12 @@ export default function WalletPage() {
             style={{ gridColumn: "1 / -1" }}
           >
             <FiPlus size={18} />
-            <span className={styles.addText}>Add Account</span>
+            <span className={styles.addText}>Tambah Rekening</span>
           </button>
         </div>
 
         <div className={styles.transactions}>
-          <h2>Your Accounts</h2>
+          <h2>Rekening Anda</h2>
 
           {accounts.length > 0 ? (
             accounts.map((account) => (
@@ -170,12 +170,12 @@ export default function WalletPage() {
               </div>
             ))
           ) : (
-            <p className={styles.emptyState}>No accounts found</p>
+            <p className={styles.emptyState}>Tidak ada rekening ditemukan</p>
           )}
         </div>
 
         <div className={styles.transactions} style={{ marginTop: "2rem" }}>
-          <h2>Recent Transfers</h2>
+          <h2>Transfer Terbaru</h2>
 
           <div className={styles.transaction}>
             <div
@@ -185,8 +185,8 @@ export default function WalletPage() {
               <FiArrowUpRight size={20} />
             </div>
             <div className={styles.transactionDetails}>
-              <h4>To Savings Account</h4>
-              <p>Sep 12, 2023</p>
+              <h4>Ke Rekening Tabungan</h4>
+              <p>12 Sep, 2023</p>
             </div>
             <p className={styles.transactionAmount}>-$500.00</p>
           </div>
@@ -199,8 +199,8 @@ export default function WalletPage() {
               <FiArrowDownLeft size={20} />
             </div>
             <div className={styles.transactionDetails}>
-              <h4>From Checking Account</h4>
-              <p>Sep 10, 2023</p>
+              <h4>Dari Rekening Utama</h4>
+              <p>10 Sep, 2023</p>
             </div>
             <p className={`${styles.transactionAmount} ${styles.income}`}>
               +$500.00
@@ -223,7 +223,7 @@ export default function WalletPage() {
       )}
 
       <footer className={styles.footer}>
-        <p>&copy; 2023 Spend.ly - Track your spending</p>
+        <p>&copy; 2023 Spend.ly - Lacak pengeluaran Anda</p>
       </footer>
     </div>
   );
@@ -231,7 +231,7 @@ export default function WalletPage() {
 
 function AccountModal({ onClose, onAdd }) {
   const [name, setName] = useState("");
-  const [type, setType] = useState("Checking");
+  const [type, setType] = useState("Giro");
   const [balance, setBalance] = useState("");
 
   const handleSubmit = (e) => {
@@ -241,15 +241,15 @@ function AccountModal({ onClose, onAdd }) {
     let color = "#0070f3";
 
     switch (type) {
-      case "Checking":
+      case "Giro":
         icon = <FiDollarSign size={20} />;
         color = "#0070f3";
         break;
-      case "Savings":
+      case "Tabungan":
         icon = <FiBarChart2 size={20} />;
         color = "#10b981";
         break;
-      case "Credit":
+      case "Kredit":
         icon = <FiCreditCard size={20} />;
         color = "#ef4444";
         break;
@@ -273,40 +273,40 @@ function AccountModal({ onClose, onAdd }) {
           <FiX size={24} />
         </button>
 
-        <h2>Add Account</h2>
+        <h2>Tambah Rekening</h2>
 
         <form onSubmit={handleSubmit}>
           <div className={styles.modalGroup}>
-            <label htmlFor="name">Account Name</label>
+            <label htmlFor="name">Nama Rekening</label>
             <input
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Main Checking"
+              placeholder="contoh: Rekening Utama"
               required
               className={styles.modalInput}
             />
           </div>
 
           <div className={styles.modalGroup}>
-            <label htmlFor="type">Account Type</label>
+            <label htmlFor="type">Jenis Rekening</label>
             <select
               id="type"
               value={type}
               onChange={(e) => setType(e.target.value)}
               className={styles.modalSelect}
             >
-              <option value="Checking">Checking</option>
-              <option value="Savings">Savings</option>
-              <option value="Credit">Credit</option>
-              <option value="Investment">Investment</option>
-              <option value="Other">Other</option>
+              <option value="Giro">Giro</option>
+              <option value="Tabungan">Tabungan</option>
+              <option value="Kredit">Kredit</option>
+              <option value="Investasi">Investasi</option>
+              <option value="Lainnya">Lainnya</option>
             </select>
           </div>
 
           <div className={styles.modalGroup}>
-            <label htmlFor="balance">Current Balance</label>
+            <label htmlFor="balance">Saldo Saat Ini</label>
             <div className={styles.amountInput}>
               <span>$</span>
               <input
@@ -324,7 +324,7 @@ function AccountModal({ onClose, onAdd }) {
 
           <button type="submit" className={styles.submitButton}>
             <FiCheck size={21} />
-            Add Account
+            Tambah Rekening
           </button>
         </form>
       </div>

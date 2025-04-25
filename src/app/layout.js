@@ -13,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Spend.ly | Track Your Expenses",
-  description: "Simple and effective way to track your spending.",
+  title: "Spend.ly | Track you expenses",
+  description: "Cara mudah dan efektif untuk melacak pengeluaran Anda.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <head>
         <link rel="icon" href="/logo.svg" type="image/svg+xml" />
       </head>

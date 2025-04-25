@@ -26,33 +26,33 @@ import { FaHouse } from "react-icons/fa6";
 const initialTransactions = [
   {
     id: 1,
-    title: "Lunch at Restaurant",
-    category: "Food",
-    date: "Sept 15, 2023",
+    title: "Makan Siang di Restoran",
+    category: "Makanan",
+    date: "15 Sept, 2023",
     amount: -24.5,
     icon: <FiCoffee size={20} />,
   },
   {
     id: 2,
-    title: "Salary",
-    category: "Income",
-    date: "Sept 10, 2023",
+    title: "Gaji",
+    category: "Pendapatan",
+    date: "10 Sept, 2023",
     amount: 3250.0,
     icon: <FiBriefcase size={20} />,
   },
   {
     id: 3,
-    title: "Rent Payment",
-    category: "Bills",
-    date: "Sept 5, 2023",
+    title: "Pembayaran Sewa",
+    category: "Tagihan",
+    date: "5 Sept, 2023",
     amount: -650.0,
     icon: <FiHouse size={20} />,
   },
   {
     id: 4,
-    title: "Groceries",
-    category: "Food",
-    date: "Sept 3, 2023",
+    title: "Belanjaan",
+    category: "Makanan",
+    date: "3 Sept, 2023",
     amount: -35.0,
     icon: <FiShoppingBag size={20} />,
   },
@@ -83,17 +83,17 @@ export default function Dashboard() {
   const items = [
     {
       icon: <FaHouse size={18} />,
-      label: "Home",
+      label: "Beranda",
       onClick: () => {}, // Already on home/dashboard
     },
     {
       icon: <IoIosWallet size={18} />,
-      label: "Wallet",
+      label: "Dompet",
       onClick: () => router.push("/wallet"),
     },
     {
       icon: <FaUser size={18} />,
-      label: "Profile",
+      label: "Profil",
       onClick: () => router.push("/profile"),
     },
   ];
@@ -117,7 +117,7 @@ export default function Dashboard() {
     const newTransaction = {
       id: transactions.length + 1,
       ...transaction,
-      date: new Date().toLocaleDateString("en-US", {
+      date: new Date().toLocaleDateString("id-ID", {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -138,7 +138,7 @@ export default function Dashboard() {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
-        <p>Loading...</p>
+        <p>Memuat...</p>
       </div>
     );
   }
@@ -148,7 +148,7 @@ export default function Dashboard() {
       <main className={styles.main}>
         <div className={styles.header}>
           <BlurText
-            text="Hello !"
+            text="Halo !"
             delay={150}
             animateBy="words"
             direction="top"
@@ -158,15 +158,15 @@ export default function Dashboard() {
 
         <div className={styles.summary}>
           <div className={styles.summaryItem}>
-            <h3>Balance</h3>
+            <h3>Saldo</h3>
             <p className={styles.balance}>${balance.toFixed(2)}</p>
           </div>
           <div className={styles.summaryItem}>
-            <h3>Income</h3>
+            <h3>Pemasukan</h3>
             <p className={styles.income}>${income.toFixed(2)}</p>
           </div>
           <div className={styles.summaryItem}>
-            <h3>Expenses</h3>
+            <h3>Pengeluaran</h3>
             <p className={styles.expense}>${expenses.toFixed(2)}</p>
           </div>
         </div>
@@ -177,22 +177,22 @@ export default function Dashboard() {
             onClick={() => setShowModal(true)}
           >
             <FiPlus size={18} />
-            <span className={styles.addText}>Add Transaction</span>
+            <span className={styles.addText}>Tambah Transaksi</span>
           </button>
           <div className={styles.filterSelectWrapper}>
             <select
               className={styles.filterSelect}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              title={filter === "all" ? "All Categories" : filter}
+              title={filter === "all" ? "Semua Kategori" : filter}
             >
-              <option value="all">All Categories</option>
-              <option value="food">Food</option>
-              <option value="income">Income</option>
-              <option value="travel">Travel</option>
-              <option value="bills">Bills</option>
-              <option value="entertainment">Entertainment</option>
-              <option value="shopping">Shopping</option>
+              <option value="all">Semua Kategori</option>
+              <option value="makanan">Makanan</option>
+              <option value="pendapatan">Pendapatan</option>
+              <option value="travel">Perjalanan</option>
+              <option value="tagihan">Tagihan</option>
+              <option value="hiburan">Hiburan</option>
+              <option value="belanja">Belanja</option>
             </select>
           </div>
           <button
@@ -205,7 +205,7 @@ export default function Dashboard() {
         </div>
 
         <div className={styles.transactions}>
-          <h2>Recent Transactions</h2>
+          <h2>Transaksi Terbaru</h2>
 
           {filteredTransactions.length > 0 ? (
             filteredTransactions.map((transaction) => (
@@ -228,7 +228,7 @@ export default function Dashboard() {
               </div>
             ))
           ) : (
-            <p className={styles.emptyState}>No transactions found</p>
+            <p className={styles.emptyState}>Tidak ada transaksi ditemukan</p>
           )}
         </div>
       </main>
@@ -258,7 +258,7 @@ export default function Dashboard() {
       )}
 
       <footer className={styles.footer}>
-        <p>&copy; 2023 Spend.ly - Track your spending</p>
+        <p>&copy; 2023 Spend.ly - Lacak pengeluaran Anda</p>
       </footer>
     </div>
   );
@@ -267,7 +267,7 @@ export default function Dashboard() {
 function TransactionModal({ onClose, onAdd }) {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("Food");
+  const [category, setCategory] = useState("Makanan");
   const [isExpense, setIsExpense] = useState(true);
 
   const handleSubmit = (e) => {
@@ -279,19 +279,19 @@ function TransactionModal({ onClose, onAdd }) {
 
     let icon;
     switch (category) {
-      case "Food":
+      case "Makanan":
         icon = <FiCoffee size={20} />;
         break;
-      case "Income":
+      case "Pendapatan":
         icon = <FiBriefcase size={20} />;
         break;
-      case "Bills":
+      case "Tagihan":
         icon = <FiHouse size={20} />;
         break;
-      case "Shopping":
+      case "Belanja":
         icon = <FiShoppingBag size={20} />;
         break;
-      case "Travel":
+      case "Perjalanan":
         icon = <FiTruck size={20} />;
         break;
       default:
@@ -313,11 +313,11 @@ function TransactionModal({ onClose, onAdd }) {
           <FiX size={24} />
         </button>
 
-        <h2>Add Transaction</h2>
+        <h2>Tambah Transaksi</h2>
 
         <form onSubmit={handleSubmit}>
           <div className={styles.modalGroup}>
-            <label>Type</label>
+            <label>Tipe</label>
             <div className={styles.typeToggle}>
               <button
                 type="button"
@@ -326,7 +326,7 @@ function TransactionModal({ onClose, onAdd }) {
                 }`}
                 onClick={() => setIsExpense(true)}
               >
-                Expense
+                Pengeluaran
               </button>
               <button
                 type="button"
@@ -335,26 +335,26 @@ function TransactionModal({ onClose, onAdd }) {
                 }`}
                 onClick={() => setIsExpense(false)}
               >
-                Income
+                Pendapatan
               </button>
             </div>
           </div>
 
           <div className={styles.modalGroup}>
-            <label htmlFor="title">Title</label>
+            <label htmlFor="title">Judul</label>
             <input
               id="title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="What was it for?"
+              placeholder="Untuk apa transaksi ini?"
               required
               className={styles.modalInput}
             />
           </div>
 
           <div className={styles.modalGroup}>
-            <label htmlFor="amount">Amount</label>
+            <label htmlFor="amount">Jumlah</label>
             <div className={styles.amountInput}>
               <span>$</span>
               <input
@@ -372,25 +372,25 @@ function TransactionModal({ onClose, onAdd }) {
           </div>
 
           <div className={styles.modalGroup}>
-            <label htmlFor="category">Category</label>
+            <label htmlFor="category">Kategori</label>
             <select
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className={styles.modalSelect}
             >
-              <option value="Food">Food</option>
-              <option value="Travel">Travel</option>
-              <option value="Bills">Bills</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Income">Income</option>
+              <option value="Makanan">Makanan</option>
+              <option value="Perjalanan">Perjalanan</option>
+              <option value="Tagihan">Tagihan</option>
+              <option value="Hiburan">Hiburan</option>
+              <option value="Belanja">Belanja</option>
+              <option value="Pendapatan">Pendapatan</option>
             </select>
           </div>
 
           <button type="submit" className={styles.submitButton}>
             <FiCheck size={21} />
-            Add Transaction
+            Tambah Transaksi
           </button>
         </form>
       </div>
@@ -403,18 +403,18 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
   const [currentYear, setCurrentYear] = useState(year);
 
   const months = [
-    "January",
-    "February",
-    "March",
+    "Januari",
+    "Februari",
+    "Maret",
     "April",
-    "May",
-    "June",
-    "July",
-    "August",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
     "September",
-    "October",
+    "Oktober",
     "November",
-    "December",
+    "Desember",
   ];
 
   const handlePrevYear = () => {
@@ -439,7 +439,7 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
           <FiX size={24} />
         </button>
 
-        <h2>Select Month</h2>
+        <h2>Pilih Bulan</h2>
 
         <div className={styles.calendarHeader}>
           <div className={styles.calendarTitle}>{currentYear}</div>

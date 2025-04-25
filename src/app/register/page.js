@@ -25,7 +25,7 @@ export default function Register() {
       // In a real app you would register the user via your backend
       if (name && email && password) {
         if (password.length < 8) {
-          setErrorMsg("Password must be at least 8 characters long");
+          setErrorMsg("Kata sandi harus minimal 8 karakter");
           setIsLoading(false);
           return;
         }
@@ -38,7 +38,7 @@ export default function Register() {
         // Redirect to dashboard
         router.push("/dashboard");
       } else {
-        setErrorMsg("Please fill out all fields");
+        setErrorMsg("Silakan lengkapi semua kolom");
       }
       setIsLoading(false);
     }, 1000);
@@ -51,22 +51,22 @@ export default function Register() {
           <FiArrowLeft size={20} />
         </Link>
 
-        <h1 className={styles.title}>Create your account</h1>
-        <p className={styles.subtitle}>Start tracking your finances today</p>
+        <h1 className={styles.title}>Buat akun Anda</h1>
+        <p className={styles.subtitle}>Mulai lacak keuangan Anda hari ini</p>
 
         {errorMsg && <div className={styles.errorAlert}>{errorMsg}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
             <label htmlFor="name" className={styles.label}>
-              Full name
+              Nama lengkap
             </label>
             <div className={styles.inputWithIcon}>
               <FiUser className={styles.inputIcon} size={18} />
               <input
                 id="name"
                 type="text"
-                placeholder="Enter your name"
+                placeholder="Masukkan nama Anda"
                 className={styles.input}
                 required
                 value={name}
@@ -77,14 +77,14 @@ export default function Register() {
 
           <div className={styles.inputGroup}>
             <label htmlFor="email" className={styles.label}>
-              Email address
+              Alamat email
             </label>
             <div className={styles.inputWithIcon}>
               <FiMail className={styles.inputIcon} size={18} />
               <input
                 id="email"
                 type="email"
-                placeholder="name@example.com"
+                placeholder="nama@contoh.com"
                 className={styles.input}
                 required
                 value={email}
@@ -95,23 +95,21 @@ export default function Register() {
 
           <div className={styles.inputGroup}>
             <label htmlFor="password" className={styles.label}>
-              Password
+              Kata Sandi
             </label>
             <div className={styles.inputWithIcon}>
               <FiLock className={styles.inputIcon} size={18} />
               <input
                 id="password"
                 type="password"
-                placeholder="Create a password"
+                placeholder="Buat kata sandi"
                 className={styles.input}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <p className={styles.passwordHint}>
-              Must be at least 8 characters long
-            </p>
+            <p className={styles.passwordHint}>Harus minimal 8 karakter</p>
           </div>
 
           <button
@@ -119,23 +117,23 @@ export default function Register() {
             className={styles.submitButton}
             disabled={isLoading}
           >
-            {isLoading ? "Creating account..." : "Create account"}
+            {isLoading ? "Membuat akun..." : "Buat akun"}
           </button>
         </form>
 
         <div className={styles.divider}>
-          <span>or</span>
+          <span>atau</span>
         </div>
 
         <button className={styles.googleButton}>
-          <Image src="/google.svg" alt="Google icon" width={18} height={18} />
-          Sign up with Google
+          <Image src="/google.svg" alt="Ikon Google" width={18} height={18} />
+          Daftar dengan Google
         </button>
 
         <p className={styles.loginText}>
-          Already have an account?{" "}
+          Sudah memiliki akun?{" "}
           <Link href="/login" className={styles.loginLink}>
-            Sign in
+            Masuk
           </Link>
         </p>
       </div>

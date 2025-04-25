@@ -15,7 +15,6 @@ export default function Login() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is already logged in
     const isLoggedIn = localStorage.getItem("isLoggedIn");
     if (isLoggedIn === "true") {
       router.push("/dashboard");
@@ -27,18 +26,14 @@ export default function Login() {
     setIsLoading(true);
     setErrorMsg("");
 
-    // Simulate login process
     setTimeout(() => {
-      // In a real app you would validate credentials with your backend
       if (email && password) {
-        // Store auth state in localStorage (in a real app, use secure auth tokens)
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("userEmail", email);
 
-        // Redirect to dashboard
         router.push("/dashboard");
       } else {
-        setErrorMsg("Please enter both email and password");
+        setErrorMsg("Silakan masukkan email dan kata sandi");
       }
       setIsLoading(false);
     }, 1000);
@@ -58,22 +53,22 @@ export default function Login() {
           <FiArrowLeft size={20} />
         </Link>
 
-        <h1 className={styles.title}>Welcome back</h1>
-        <p className={styles.subtitle}>Sign in to your account</p>
+        <h1 className={styles.title}>Selamat datang</h1>
+        <p className={styles.subtitle}>Masuk ke akun Anda</p>
 
         {errorMsg && <div className={styles.errorAlert}>{errorMsg}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
             <label htmlFor="email" className={styles.label}>
-              Email address
+              Alamat email
             </label>
             <div className={styles.inputWithIcon}>
               <FiMail className={styles.inputIcon} size={18} />
               <input
                 id="email"
                 type="email"
-                placeholder="name@example.com"
+                placeholder="nama@contoh.com"
                 className={styles.input}
                 required
                 value={email}
@@ -85,10 +80,10 @@ export default function Login() {
           <div className={styles.inputGroup}>
             <div className={styles.labelRow}>
               <label htmlFor="password" className={styles.label}>
-                Password
+                Kata Sandi
               </label>
               <Link href="/forgot-password" className={styles.forgotLink}>
-                Forgot password?
+                Lupa kata sandi?
               </Link>
             </div>
             <div className={styles.inputWithIcon}>
@@ -96,7 +91,7 @@ export default function Login() {
               <input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Masukkan kata sandi Anda"
                 className={styles.input}
                 required
                 value={password}
@@ -110,29 +105,29 @@ export default function Login() {
             className={styles.submitButton}
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? "Sedang masuk..." : "Masuk"}
           </button>
         </form>
 
         <div className={styles.divider}>
-          <span>or</span>
+          <span>atau</span>
         </div>
 
         <button className={styles.googleButton}>
-          <Image src="/google.svg" alt="Google icon" width={18} height={18} />
-          Sign in with Google
+          <Image src="/google.svg" alt="Ikon Google" width={18} height={18} />
+          Masuk dengan Google
         </button>
 
         {process.env.NODE_ENV === "development" && (
           <button onClick={skipLogin} className={styles.demoButton}>
-            Continue as demo user
+            Lanjutkan sebagai pengguna demo
           </button>
         )}
 
         <p className={styles.signupText}>
-          Don&apos;t have an account?{" "}
+          Belum memiliki akun?{" "}
           <Link href="/register" className={styles.signupLink}>
-            Sign up
+            Daftar
           </Link>
         </p>
       </div>

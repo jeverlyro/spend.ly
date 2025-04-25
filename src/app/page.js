@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div className={styles.loadingContainer}>
       <div className={styles.loadingSpinner}></div>
-      <p>Loading...</p>
+      <p>Memuat...</p>
     </div>
   );
 }
