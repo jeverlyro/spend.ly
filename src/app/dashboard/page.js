@@ -68,7 +68,6 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Check authentication
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
 
@@ -84,7 +83,7 @@ export default function Dashboard() {
     {
       icon: <FaHouse size={18} />,
       label: "Beranda",
-      onClick: () => {}, // Already on home/dashboard
+      onClick: () => {},
     },
     {
       icon: <IoIosWallet size={18} />,

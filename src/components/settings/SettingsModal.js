@@ -12,7 +12,6 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
   const [setting, setSetting] = useState(initialSetting);
   const [previousSetting, setPreviousSetting] = useState(null);
 
-  // Support ticket form state
   const [showSupportForm, setShowSupportForm] = useState(false);
   const [supportForm, setSupportForm] = useState({
     subject: "",
@@ -45,10 +44,8 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
   const handleSupportSubmit = (e) => {
     e.preventDefault();
 
-    // Here you would normally send the data to your backend
     console.log("Support ticket submitted:", supportForm);
 
-    // Show toast and reset form
     addToast(
       "Tiket dukungan dibuat! Kami akan segera menghubungi Anda.",
       "success",

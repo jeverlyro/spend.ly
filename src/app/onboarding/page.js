@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -33,7 +33,6 @@ export default function Onboarding() {
   const [animatingOut, setAnimatingOut] = useState(false);
   const router = useRouter();
 
-  // If user has already seen onboarding, redirect to login
   useEffect(() => {
     const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
     const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -45,7 +44,7 @@ export default function Onboarding() {
     }
   }, [router]);
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     if (currentSlide < slides.length - 1) {
       setAnimatingOut(true);
       setTimeout(() => {
@@ -53,9 +52,9 @@ export default function Onboarding() {
         setAnimatingOut(false);
       }, 300);
     }
-  };
+  }, [currentSlide]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     if (currentSlide > 0) {
       setAnimatingOut(true);
       setTimeout(() => {
@@ -63,14 +62,12 @@ export default function Onboarding() {
         setAnimatingOut(false);
       }, 300);
     }
-  };
+  }, [currentSlide]);
 
   const completeOnboarding = () => {
-    // Mark onboarding as completed in localStorage
     localStorage.setItem("hasSeenOnboarding", "true");
   };
 
-  // Auto-advance slides every 5 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentSlide < slides.length - 1) {
@@ -79,7 +76,7 @@ export default function Onboarding() {
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [currentSlide]);
+  }, [currentSlide, nextSlide]);
 
   return (
     <div className={styles.container}>
