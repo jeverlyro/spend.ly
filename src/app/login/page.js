@@ -27,7 +27,7 @@ export default function Login() {
   // Function to verify token with backend
   const verifyToken = async (token) => {
     try {
-      const response = await fetch("http://localhost:3000/api/auth/verify", {
+      const response = await fetch("http://localhost:5000/api/auth/verify", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -35,10 +35,8 @@ export default function Login() {
       });
 
       if (response.ok) {
-        // Token is valid, redirect to dashboard
         router.push("/dashboard");
       } else {
-        // Token invalid, clear localStorage
         localStorage.removeItem("userToken");
         localStorage.removeItem("userName");
         localStorage.removeItem("userEmail");
@@ -55,7 +53,7 @@ export default function Login() {
     setErrorMsg("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,6 +68,7 @@ export default function Login() {
         localStorage.setItem("userToken", data.token);
         localStorage.setItem("userName", data.user.name);
         localStorage.setItem("userEmail", data.user.email);
+        localStorage.setItem("isLoggedIn", "true"); // Add this line
         if (data.user.photo) {
           localStorage.setItem("userPhoto", data.user.photo);
         }

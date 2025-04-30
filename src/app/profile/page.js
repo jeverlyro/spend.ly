@@ -31,6 +31,15 @@ export default function ProfilePage() {
   const { addToast } = useToast();
   const router = useRouter();
 
+  // Add this helper function near the start of your ProfilePage component
+  useEffect(() => {
+    // This ensures isLoggedIn flag is synchronized with token presence
+    const token = localStorage.getItem("userToken");
+    if (token && !localStorage.getItem("isLoggedIn")) {
+      localStorage.setItem("isLoggedIn", "true");
+    }
+  }, []);
+
   // Check for authentication
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -56,17 +65,22 @@ export default function ProfilePage() {
     {
       icon: <FaHouse size={18} />,
       label: "Beranda",
-      onClick: () => router.push("/dashboard"),
+      onClick: () => {
+        // Use window.location for consistent navigation behavior
+        window.location.href = "/dashboard";
+      },
     },
     {
       icon: <IoIosWallet size={18} />,
       label: "Dompet",
-      onClick: () => router.push("/wallet"),
+      onClick: () => {
+        window.location.href = "/wallet";
+      },
     },
     {
       icon: <FaUser size={18} />,
       label: "Profil",
-      onClick: () => {}, // current page
+      onClick: () => {}, // Current page
     },
   ];
 
@@ -76,14 +90,22 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
+    // Clear all authentication data
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userPhoto");
+
+    // Optional: Set onboarding flag if needed
     localStorage.setItem("showOnboarding", "true");
 
+    // Notify user
     addToast("Keluar...", "info", 2000);
 
+    // Force page reload to ensure clean state
     setTimeout(() => {
-      router.push("/login");
+      window.location.href = "/login";
     }, 1000);
   };
 
@@ -247,7 +269,7 @@ function ProfileEditModal({ onClose }) {
     try {
       const token = localStorage.getItem("userToken");
 
-      const response = await fetch("http://localhost:3000/api/auth/profile", {
+      const response = await fetch("http://localhost:5000/api/auth/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

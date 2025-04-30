@@ -74,36 +74,57 @@ export default function Dashboard() {
 
     async function verifyAuth() {
       try {
-        const response = await fetch("http://localhost:3000/api/auth/verify", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          localStorage.removeItem("userToken");
-          localStorage.removeItem("userName");
-          localStorage.removeItem("userEmail");
-          localStorage.removeItem("userPhoto");
-
+        // Check if we have a token first
+        if (!token) {
           router.push("/login");
           return;
         }
 
-        // User is authenticated
-        setIsLoading(false);
+        // First check if we're already authenticated locally to prevent unnecessary API calls
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn === "true") {
+          setIsLoading(false);
+          return;
+        }
+
+        // Only verify with backend if needed
+        try {
+          const response = await fetch(
+            "http://localhost:5000/api/auth/verify",
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (response.ok) {
+            // If verification successful, set logged in flag
+            localStorage.setItem("isLoggedIn", "true");
+            setIsLoading(false);
+          } else {
+            // Clear auth data on failed verification
+            localStorage.removeItem("userToken");
+            localStorage.removeItem("userName");
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("userPhoto");
+            localStorage.removeItem("isLoggedIn");
+            router.push("/login");
+          }
+        } catch (error) {
+          console.error("Backend verification error:", error);
+          // On network errors, assume token is valid to prevent logout loops
+          // This allows offline usage until proven otherwise
+          localStorage.setItem("isLoggedIn", "true");
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error("Authentication error:", error);
-        router.push("/login");
       }
     }
 
-    if (!token) {
-      router.push("/login");
-    } else {
-      verifyAuth();
-    }
+    verifyAuth();
   }, [router]);
 
   const items = [
