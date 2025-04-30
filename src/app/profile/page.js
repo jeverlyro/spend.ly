@@ -26,6 +26,8 @@ export default function ProfilePage() {
   const [settingsType, setSettingsType] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userPhoto, setUserPhoto] = useState(null);
   const { addToast } = useToast();
   const router = useRouter();
 
@@ -38,12 +40,17 @@ export default function ProfilePage() {
       return;
     }
 
-    // Get user email from localStorage
+    // Get user data from localStorage
     const email = localStorage.getItem("userEmail") || "user@example.com";
+    const name = localStorage.getItem("userName") || email.split("@")[0];
+    const photo = localStorage.getItem("userPhoto") || null;
+
     setUserEmail(email);
+    setUserName(name);
+    setUserPhoto(photo);
 
     setIsLoading(false);
-  }, [router]);
+  }, [router, showModal]); // Re-fetch data when modal closes
 
   const items = [
     {
@@ -69,13 +76,12 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    // Clear localStorage values
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userEmail");
+    localStorage.setItem("showOnboarding", "true");
 
     addToast("Keluar...", "info", 2000);
 
-    // Redirect to login page
     setTimeout(() => {
       router.push("/login");
     }, 1000);
@@ -106,10 +112,18 @@ export default function ProfilePage() {
         <div className={styles.profileSection}>
           <div className={styles.profileHeader}>
             <div className={styles.profileAvatar}>
-              <FiUser size={32} />
+              {userPhoto ? (
+                <img
+                  src={userPhoto}
+                  alt="Avatar"
+                  className={styles.avatarImage}
+                />
+              ) : (
+                <FiUser size={32} />
+              )}
             </div>
             <div className={styles.profileInfo}>
-              <h2>{userEmail.split("@")[0]}</h2>
+              <h2>{userName}</h2>
               <p>{userEmail}</p>
             </div>
           </div>
@@ -192,19 +206,83 @@ export default function ProfilePage() {
 }
 
 function ProfileEditModal({ onClose }) {
-  const [name, setName] = useState("Alex Johnson");
-  const [email, setEmail] = useState("alex.johnson@example.com");
+  const [name, setName] = useState(
+    () => localStorage.getItem("userName") || "Alex Johnson"
+  );
+  const [email, setEmail] = useState(
+    () => localStorage.getItem("userEmail") || "alex.johnson@example.com"
+  );
+  const [photo, setPhoto] = useState(
+    () => localStorage.getItem("userPhoto") || null
+  );
   const { addToast } = useToast();
 
-  const handleSubmit = (e) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.match("image.*")) {
+      addToast("Hanya file gambar yang diperbolehkan", "error", 3000);
+      return;
+    }
+
+    // Check file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      addToast("Ukuran gambar maksimal 2MB", "error", 3000);
+      return;
+    }
+
+    // Use FileReader to convert to base64
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPhoto(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, update the user profile
-    addToast(
-      `Profil berhasil diperbarui! Nama diubah menjadi ${name}`,
-      "success",
-      3000
-    );
-    onClose();
+
+    try {
+      const token = localStorage.getItem("userToken");
+
+      const response = await fetch("http://localhost:3000/api/auth/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          photo,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Update localStorage with new user data
+        localStorage.setItem("userName", name);
+        localStorage.setItem("userEmail", email);
+        if (photo) {
+          localStorage.setItem("userPhoto", photo);
+        }
+
+        addToast(
+          `Profil berhasil diperbarui! Nama diubah menjadi ${name}`,
+          "success",
+          3000
+        );
+        onClose();
+      } else {
+        addToast(data.message || "Gagal memperbarui profil", "error", 3000);
+      }
+    } catch (error) {
+      console.error("Profile update error:", error);
+      addToast("Terjadi kesalahan. Silakan coba lagi.", "error", 3000);
+    }
   };
 
   return (
@@ -217,6 +295,40 @@ function ProfileEditModal({ onClose }) {
         <h2>Edit Profil</h2>
 
         <form onSubmit={handleSubmit}>
+          <div className={styles.photoUploadContainer}>
+            <div className={styles.avatarPreview}>
+              {photo ? (
+                <img src={photo} alt="Avatar" className={styles.avatarImage} />
+              ) : (
+                <FiUser size={40} />
+              )}
+            </div>
+            <div className={styles.uploadControls}>
+              <label htmlFor="photo-upload" className={styles.uploadButton}>
+                Pilih Foto
+              </label>
+              <input
+                id="photo-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className={styles.fileInput}
+              />
+              {photo && (
+                <button
+                  type="button"
+                  className={styles.removePhotoButton}
+                  onClick={() => {
+                    setPhoto(null);
+                    localStorage.removeItem("userPhoto");
+                  }}
+                >
+                  Hapus Foto
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className={styles.modalGroup}>
             <label htmlFor="name">Nama Lengkap</label>
             <input

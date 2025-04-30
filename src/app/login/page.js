@@ -15,35 +15,79 @@ export default function Login() {
   const router = useRouter();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (isLoggedIn === "true") {
-      router.push("/dashboard");
+    // Check if user is already logged in
+    const token = localStorage.getItem("userToken");
+
+    if (token) {
+      // Verify token validity with backend
+      verifyToken(token);
     }
   }, [router]);
 
-  const handleSubmit = (e) => {
+  // Function to verify token with backend
+  const verifyToken = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/verify", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        // Token is valid, redirect to dashboard
+        router.push("/dashboard");
+      } else {
+        // Token invalid, clear localStorage
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userPhoto");
+      }
+    } catch (error) {
+      console.error("Token verification error:", error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMsg("");
 
-    setTimeout(() => {
-      if (email && password) {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userEmail", email);
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store user data in localStorage
+        localStorage.setItem("userToken", data.token);
+        localStorage.setItem("userName", data.user.name);
+        localStorage.setItem("userEmail", data.user.email);
+        if (data.user.photo) {
+          localStorage.setItem("userPhoto", data.user.photo);
+        }
+
+        // Redirect to dashboard
         router.push("/dashboard");
       } else {
-        setErrorMsg("Silakan masukkan email dan kata sandi");
+        setErrorMsg(
+          data.message ||
+            "Login gagal. Silakan periksa email dan kata sandi Anda."
+        );
       }
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrorMsg("Terjadi kesalahan. Silakan coba lagi nanti.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
-  };
-
-  // Allow users to skip login in development environment
-  const skipLogin = () => {
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("userEmail", "demo@example.com");
-    router.push("/dashboard");
+    }
   };
 
   return (
@@ -117,12 +161,6 @@ export default function Login() {
           <Image src="/google.svg" alt="Ikon Google" width={18} height={18} />
           Masuk dengan Google
         </button>
-
-        {process.env.NODE_ENV === "development" && (
-          <button onClick={skipLogin} className={styles.demoButton}>
-            Lanjutkan sebagai pengguna demo
-          </button>
-        )}
 
         <p className={styles.signupText}>
           Belum memiliki akun?{" "}

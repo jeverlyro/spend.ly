@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
+import AccountsChart from "@/components/charts/AccountsChart";
 import {
   FiPlus,
   FiCreditCard,
@@ -29,7 +30,7 @@ const items = [
   {
     icon: <IoIosWallet size={18} />,
     label: "Dompet",
-    onClick: () => {}, // current page
+    onClick: () => {},
   },
   {
     icon: <FaUser size={18} />,
@@ -71,16 +72,43 @@ export default function WalletPage() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Check authentication
+  // Check authentication with backend
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const token = localStorage.getItem("userToken");
 
-    if (!isLoggedIn) {
-      router.push("/login");
-      return;
+    async function verifyAuth() {
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/verify", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          // Token invalid, clear localStorage and redirect
+          localStorage.removeItem("userToken");
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("userPhoto");
+
+          router.push("/login");
+          return;
+        }
+
+        // User is authenticated
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Authentication error:", error);
+        router.push("/login");
+      }
     }
 
-    setIsLoading(false);
+    if (!token) {
+      router.push("/login");
+    } else {
+      verifyAuth();
+    }
   }, [router]);
 
   const totalBalance = accounts.reduce(
@@ -127,6 +155,11 @@ export default function WalletPage() {
               ${Math.abs(totalBalance).toFixed(2)}
             </p>
           </div>
+        </div>
+
+        {/* Add Chart Section */}
+        <div className={styles.chartContainer}>
+          <AccountsChart accounts={accounts} />
         </div>
 
         <div className={styles.actions}>

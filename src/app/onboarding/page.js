@@ -34,12 +34,15 @@ export default function Onboarding() {
   const router = useRouter();
 
   useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
     const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const showOnboarding = localStorage.getItem("showOnboarding");
 
-    if (hasSeenOnboarding === "true" && isLoggedIn === "true") {
+    if (isLoggedIn === "true") {
       router.push("/dashboard");
-    } else if (hasSeenOnboarding === "true") {
+    } else if (
+      showOnboarding !== "true" &&
+      localStorage.getItem("hasSeenOnboarding") === "true"
+    ) {
       router.push("/login");
     }
   }, [router]);
@@ -64,8 +67,10 @@ export default function Onboarding() {
     }
   }, [currentSlide]);
 
+  // Update the completeOnboarding function to mark that user has seen onboarding
   const completeOnboarding = () => {
     localStorage.setItem("hasSeenOnboarding", "true");
+    localStorage.removeItem("showOnboarding");
   };
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
+import TransactionChart from "@/components/charts/TransactionChart";
 import {
   FiPlus,
   FiBriefcase,
@@ -69,14 +70,40 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const token = localStorage.getItem("userToken");
 
-    if (!isLoggedIn) {
-      router.push("/login");
-      return;
+    async function verifyAuth() {
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/verify", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          localStorage.removeItem("userToken");
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("userPhoto");
+
+          router.push("/login");
+          return;
+        }
+
+        // User is authenticated
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Authentication error:", error);
+        router.push("/login");
+      }
     }
 
-    setIsLoading(false);
+    if (!token) {
+      router.push("/login");
+    } else {
+      verifyAuth();
+    }
   }, [router]);
 
   const items = [
@@ -168,6 +195,12 @@ export default function Dashboard() {
             <h3>Pengeluaran</h3>
             <p className={styles.expense}>${expenses.toFixed(2)}</p>
           </div>
+        </div>
+
+        {/* Chart Section */}
+        <div className={styles.transactions} style={{ marginBottom: "1.5rem" }}>
+          <h2>Ringkasan Finansial</h2>
+          <TransactionChart transactions={transactions} month={month} />
         </div>
 
         <div className={styles.actions}>
