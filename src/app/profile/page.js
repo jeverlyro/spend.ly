@@ -141,7 +141,9 @@ export default function ProfilePage() {
                   className={styles.avatarImage}
                 />
               ) : (
-                <FiUser size={32} />
+                <div className={styles.defaultAvatar}>
+                  <FiUser size={32} />
+                </div>
               )}
             </div>
             <div className={styles.profileInfo}>
@@ -322,7 +324,9 @@ function ProfileEditModal({ onClose }) {
               {photo ? (
                 <img src={photo} alt="Avatar" className={styles.avatarImage} />
               ) : (
-                <FiUser size={40} />
+                <div className={styles.defaultAvatar}>
+                  <FiUser size={32} />
+                </div>
               )}
             </div>
             <div className={styles.uploadControls}>

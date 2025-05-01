@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./login.module.css";
-import { FiArrowLeft, FiMail, FiLock } from "react-icons/fi";
+import { FiMail, FiLock, FiArrowLeft } from "react-icons/fi";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -191,37 +191,38 @@ export function AuthCallback() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    console.log("Auth callback component mounted");
+
+    // Log all search params for debugging
+    searchParams.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+
     const token = searchParams.get("token");
     const name = searchParams.get("name");
     const email = searchParams.get("email");
     const photo = searchParams.get("photo");
 
+    console.log(`Token received: ${token ? "Yes" : "No"}`);
+
     if (token) {
       // Store user data in localStorage
       localStorage.setItem("userToken", token);
-      localStorage.setItem("userName", name);
-      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userName", name || "");
+      localStorage.setItem("userEmail", email || "");
       localStorage.setItem("isLoggedIn", "true");
 
       if (photo) {
         localStorage.setItem("userPhoto", photo);
       }
 
-      // Redirect to dashboard
+      console.log("Redirecting to dashboard");
       router.push("/dashboard");
     } else {
-      // Handle error case
+      console.error("No token in callback, redirecting to login");
       router.push("/login?error=authentication_failed");
     }
   }, [router, searchParams]);
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.formCard}>
-        <h1 className={styles.title}>Proses Autentikasi</h1>
-        <p className={styles.subtitle}>Mohon tunggu sebentar...</p>
-        <div className={styles.loadingSpinner}></div>
-      </div>
-    </div>
-  );
+  // Rest of the component...
 }

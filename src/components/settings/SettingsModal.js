@@ -219,10 +219,10 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
 
               <h3>Tim Pengembang</h3>
               <ul className={styles.teamList}>
-                <li>I Kadek Tresna Jeverly - Pengembang Utama</li>
-                <li>Arturito Imanuel Rawung - Desainer UI/UX</li>
-                <li>Revando Aruperes - Insinyur Backend</li>
-                <li>Ricky Mambu - Pengembang Mobile</li>
+                <li>I Kadek Tresna Jeverly - Full-stack</li>
+                <li>Arturito Imanuel Rawung - Backend</li>
+                <li>Revando Aruperes - Fullstack</li>
+                <li>Ricky Mambu - PR</li>
               </ul>
 
               <div className={styles.legalInfo}>

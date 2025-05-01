@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import moment from "moment";
+import "moment/locale/id";
 import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
@@ -19,58 +21,42 @@ import {
   FiCalendar,
   FiChevronLeft,
   FiChevronRight,
+  FiEdit2,
+  FiTrash2,
+  FiTag,
+  FiInfo,
 } from "react-icons/fi";
 import { IoIosWallet } from "react-icons/io";
 import { FaUser } from "react-icons/fa";
 import { FaHouse } from "react-icons/fa6";
 
-const initialTransactions = [
-  {
-    id: 1,
-    title: "Makan Siang di Restoran",
-    category: "Makanan",
-    date: "15 Sept, 2023",
-    amount: -24.5,
-    icon: <FiCoffee size={20} />,
-  },
-  {
-    id: 2,
-    title: "Gaji",
-    category: "Pendapatan",
-    date: "10 Sept, 2023",
-    amount: 3250.0,
-    icon: <FiBriefcase size={20} />,
-  },
-  {
-    id: 3,
-    title: "Pembayaran Sewa",
-    category: "Tagihan",
-    date: "5 Sept, 2023",
-    amount: -650.0,
-    icon: <FiHouse size={20} />,
-  },
-  {
-    id: 4,
-    title: "Belanjaan",
-    category: "Makanan",
-    date: "3 Sept, 2023",
-    amount: -35.0,
-    icon: <FiShoppingBag size={20} />,
-  },
-];
-
 export default function Dashboard() {
-  const [transactions, setTransactions] = useState(initialTransactions);
+  // Set moment locale to Indonesian
+  moment.locale("id");
+
+  // Get current month in YYYY-MM format and display format
+  const currentMoment = moment();
+  const initialMonth = currentMoment.format("YYYY-MM");
+  const initialDisplayMonth = currentMoment.format("MMMM YYYY");
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [transactions, setTransactions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [filter, setFilter] = useState("all");
-  const [month, setMonth] = useState("2023-09");
-  const [displayMonth, setDisplayMonth] = useState("September 2023");
+  const [month, setMonth] = useState(initialMonth);
+  const [displayMonth, setDisplayMonth] = useState(initialDisplayMonth);
   const [isLoading, setIsLoading] = useState(true);
+  const [userName, setUserName] = useState("");
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
+    const name = localStorage.getItem("userName");
+
+    // Set username from localStorage
+    if (name) {
+      setUserName(name);
+    }
 
     async function verifyAuth() {
       try {
@@ -164,11 +150,7 @@ export default function Dashboard() {
     const newTransaction = {
       id: transactions.length + 1,
       ...transaction,
-      date: new Date().toLocaleDateString("id-ID", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
+      date: moment().format("D MMM YYYY"), // Format date using moment
     };
 
     setTransactions([newTransaction, ...transactions]);
@@ -179,6 +161,14 @@ export default function Dashboard() {
     setMonth(newMonth);
     setDisplayMonth(monthName);
     setShowCalendarModal(false);
+  };
+
+  const handleEditTransaction = (transaction) => {
+    setShowModal(true);
+  };
+
+  const handleDeleteTransaction = (id) => {
+    setTransactions(transactions.filter((t) => t.id !== id));
   };
 
   if (isLoading) {
@@ -195,7 +185,7 @@ export default function Dashboard() {
       <main className={styles.main}>
         <div className={styles.header}>
           <BlurText
-            text="Halo !"
+            text={`Halo, ${userName} !`}
             delay={150}
             animateBy="words"
             direction="top"
@@ -221,7 +211,13 @@ export default function Dashboard() {
         {/* Chart Section */}
         <div className={styles.transactions} style={{ marginBottom: "1.5rem" }}>
           <h2>Ringkasan Finansial</h2>
-          <TransactionChart transactions={transactions} month={month} />
+          {transactions.length > 0 ? (
+            <TransactionChart transactions={transactions} month={month} />
+          ) : (
+            <p className={styles.emptyState}>
+              Belum ada transaksi untuk ditampilkan dalam grafik
+            </p>
+          )}
         </div>
 
         <div className={styles.actions}>
@@ -232,29 +228,33 @@ export default function Dashboard() {
             <FiPlus size={18} />
             <span className={styles.addText}>Tambah Transaksi</span>
           </button>
-          <div className={styles.filterSelectWrapper}>
-            <select
-              className={styles.filterSelect}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              title={filter === "all" ? "Semua Kategori" : filter}
-            >
-              <option value="all">Semua Kategori</option>
-              <option value="makanan">Makanan</option>
-              <option value="pendapatan">Pendapatan</option>
-              <option value="travel">Perjalanan</option>
-              <option value="tagihan">Tagihan</option>
-              <option value="hiburan">Hiburan</option>
-              <option value="belanja">Belanja</option>
-            </select>
-          </div>
-          <button
-            className={styles.datePickerButton}
-            onClick={() => setShowCalendarModal(true)}
-          >
-            <span>{displayMonth}</span>
-            <FiCalendar size={18} />
-          </button>
+          {transactions.length > 0 && (
+            <>
+              <div className={styles.filterSelectWrapper}>
+                <select
+                  className={styles.filterSelect}
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  title={filter === "all" ? "Semua Kategori" : filter}
+                >
+                  <option value="all">Semua Kategori</option>
+                  <option value="makanan">Makanan</option>
+                  <option value="pendapatan">Pendapatan</option>
+                  <option value="travel">Perjalanan</option>
+                  <option value="tagihan">Tagihan</option>
+                  <option value="hiburan">Hiburan</option>
+                  <option value="belanja">Belanja</option>
+                </select>
+              </div>
+              <button
+                className={styles.datePickerButton}
+                onClick={() => setShowCalendarModal(true)}
+              >
+                <span>{displayMonth}</span>
+                <FiCalendar size={18} />
+              </button>
+            </>
+          )}
         </div>
 
         <div className={styles.transactions}>
@@ -262,7 +262,11 @@ export default function Dashboard() {
 
           {filteredTransactions.length > 0 ? (
             filteredTransactions.map((transaction) => (
-              <div key={transaction.id} className={styles.transaction}>
+              <div
+                key={transaction.id}
+                className={styles.transaction}
+                onClick={() => setSelectedTransaction(transaction)}
+              >
                 <div className={styles.transactionIcon}>{transaction.icon}</div>
                 <div className={styles.transactionDetails}>
                   <h4>{transaction.title}</h4>
@@ -281,7 +285,15 @@ export default function Dashboard() {
               </div>
             ))
           ) : (
-            <p className={styles.emptyState}>Tidak ada transaksi ditemukan</p>
+            <div className={styles.emptyStateContainer}>
+              <p className={styles.emptyState}>
+                Anda belum memiliki transaksi terbaru
+              </p>
+              <p className={styles.emptyStateSubtext}>
+                Tambahkan transaksi pertama Anda dengan menekan tombol "Tambah
+                Transaksi"
+              </p>
+            </div>
           )}
         </div>
       </main>
@@ -307,6 +319,15 @@ export default function Dashboard() {
           onClose={() => setShowCalendarModal(false)}
           onSelect={handleMonthSelect}
           currentMonth={month}
+        />
+      )}
+
+      {selectedTransaction && (
+        <TransactionDetailsModal
+          transaction={selectedTransaction}
+          onClose={() => setSelectedTransaction(null)}
+          onEdit={handleEditTransaction}
+          onDelete={handleDeleteTransaction}
         />
       )}
 
@@ -455,20 +476,8 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
   const [year, month] = currentMonth.split("-").map(Number);
   const [currentYear, setCurrentYear] = useState(year);
 
-  const months = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
+  // Use moment's month names
+  const months = moment.months();
 
   const handlePrevYear = () => {
     setCurrentYear((prev) => prev - 1);
@@ -479,10 +488,10 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
   };
 
   const handleSelectMonth = (monthIndex) => {
-    const formattedMonth = String(monthIndex + 1).padStart(2, "0");
-    const monthValue = `${currentYear}-${formattedMonth}`;
-    const monthDisplay = `${months[monthIndex]} ${currentYear}`;
-    onSelect(monthValue, monthDisplay);
+    const momentDate = moment().year(currentYear).month(monthIndex);
+    const formattedMonth = momentDate.format("YYYY-MM");
+    const monthDisplay = momentDate.format("MMMM YYYY");
+    onSelect(formattedMonth, monthDisplay);
   };
 
   return (
@@ -514,14 +523,11 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
 
         <div className={styles.monthGrid}>
           {months.map((monthName, index) => {
-            const monthValue = `${currentYear}-${String(index + 1).padStart(
-              2,
-              "0"
-            )}`;
+            const momentDate = moment().year(currentYear).month(index);
+            const monthValue = momentDate.format("YYYY-MM");
             const isSelected = monthValue === currentMonth;
             const isCurrentDate =
-              new Date().getMonth() === index &&
-              new Date().getFullYear() === currentYear;
+              moment().month() === index && moment().year() === currentYear;
 
             return (
               <button
@@ -529,13 +535,116 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
                 className={`${styles.monthItem} ${
                   isSelected ? styles.monthItemSelected : ""
                 } 
-                           ${isCurrentDate ? styles.monthItemCurrent : ""}`}
+                ${isCurrentDate ? styles.monthItemCurrent : ""}`}
                 onClick={() => handleSelectMonth(index)}
               >
                 {monthName.substring(0, 3)}
               </button>
             );
           })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modal}>
+        <button className={styles.closeButton} onClick={onClose}>
+          <FiX size={24} />
+        </button>
+
+        <div className={styles.transactionDetailsHeader}>
+          <div
+            className={styles.transactionIconLarge}
+            style={{
+              color: transaction.amount > 0 ? "#10b981" : "#ef4444",
+              background: transaction.amount > 0 ? "#10b98115" : "#ef444415",
+            }}
+          >
+            {transaction.icon}
+          </div>
+          <h2>{transaction.title}</h2>
+        </div>
+
+        <div className={styles.transactionDetailsContent}>
+          <div className={styles.transactionDetail}>
+            <div className={styles.transactionDetailIcon}>
+              <FiDollarSign size={18} />
+            </div>
+            <div className={styles.transactionDetailText}>
+              <p className={styles.transactionDetailLabel}>Jumlah</p>
+              <p
+                className={`${styles.transactionDetailValue} ${
+                  transaction.amount > 0 ? styles.income : styles.expense
+                }`}
+              >
+                {transaction.amount > 0 ? "+" : "-"}$
+                {Math.abs(transaction.amount).toFixed(2)}
+              </p>
+            </div>
+          </div>
+
+          <div className={styles.transactionDetail}>
+            <div className={styles.transactionDetailIcon}>
+              <FiTag size={18} />
+            </div>
+            <div className={styles.transactionDetailText}>
+              <p className={styles.transactionDetailLabel}>Kategori</p>
+              <p className={styles.transactionDetailValue}>
+                {transaction.category}
+              </p>
+            </div>
+          </div>
+
+          <div className={styles.transactionDetail}>
+            <div className={styles.transactionDetailIcon}>
+              <FiCalendar size={18} />
+            </div>
+            <div className={styles.transactionDetailText}>
+              <p className={styles.transactionDetailLabel}>Tanggal</p>
+              <p className={styles.transactionDetailValue}>
+                {transaction.date}
+              </p>
+            </div>
+          </div>
+
+          <div className={styles.transactionDetail}>
+            <div className={styles.transactionDetailIcon}>
+              <FiInfo size={18} />
+            </div>
+            <div className={styles.transactionDetailText}>
+              <p className={styles.transactionDetailLabel}>Tipe</p>
+              <p className={styles.transactionDetailValue}>
+                {transaction.amount > 0 ? "Pendapatan" : "Pengeluaran"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.transactionActions}>
+          <button
+            className={`${styles.actionButton} ${styles.editButton}`}
+            onClick={() => {
+              onClose();
+              onEdit(transaction);
+            }}
+          >
+            <FiEdit2 size={18} />
+            <span>Edit</span>
+          </button>
+          <button
+            className={`${styles.actionButton} ${styles.deleteButton}`}
+            onClick={() => {
+              onDelete(transaction.id);
+              onClose();
+            }}
+          >
+            <FiTrash2 size={18} />
+            <span>Hapus</span>
+          </button>
         </div>
       </div>
     </div>

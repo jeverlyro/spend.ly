@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Pie } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 
 // Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -10,25 +10,36 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 export default function AccountsChart({ accounts }) {
   // Filter out accounts with negative balance for the pie chart
   const positiveAccounts = accounts.filter((account) => account.balance > 0);
+  const totalBalance = positiveAccounts.reduce(
+    (sum, account) => sum + account.balance,
+    0
+  );
+
+  const chartRef = useRef(null);
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "right",
+        position: "bottom", // Changed from "right" to "bottom" for better fit on mobile
+        align: "center",
         labels: {
           usePointStyle: true,
-          boxWidth: 8,
+          pointStyle: "rectRounded",
+          boxWidth: 10,
+          boxHeight: 10,
           padding: 15,
           font: {
             family: "var(--font-geist-sans)",
-            size: 12,
+            size: 11,
+            weight: "500",
           },
+          color: "#334155",
         },
       },
       tooltip: {
-        backgroundColor: "white",
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
         titleColor: "#334155",
         bodyColor: "#334155",
         titleFont: {
@@ -42,21 +53,44 @@ export default function AccountsChart({ accounts }) {
         },
         padding: 12,
         boxPadding: 6,
+        cornerRadius: 8,
         borderWidth: 1,
-        borderColor: "#e2e8f0",
+        borderColor: "rgba(226, 232, 240, 0.8)",
         usePointStyle: true,
         callbacks: {
+          title: (tooltipItems) => {
+            return tooltipItems[0].label;
+          },
           label: (context) => {
-            const label = context.label || "";
-            const value = context.parsed || 0;
-            return `${label}: $${value.toFixed(2)}`;
+            const value = context.raw || 0;
+            const percentage = ((value / totalBalance) * 100).toFixed(1);
+            return [`$${value.toFixed(2)}`, `${percentage}% dari total`];
           },
         },
       },
     },
-    cutout: "60%",
+    cutout: "65%",
+    radius: "90%",
     animation: {
       animateScale: true,
+      animateRotate: true,
+      duration: 1000,
+      easing: "easeOutQuart",
+    },
+    layout: {
+      padding: {
+        top: 5,
+        bottom: 5,
+        left: 5,
+        right: 5,
+      },
+    },
+    elements: {
+      arc: {
+        borderWidth: 2,
+        borderColor: "#fff",
+        hoverBorderWidth: 3,
+      },
     },
   };
 
@@ -65,10 +99,15 @@ export default function AccountsChart({ accounts }) {
     datasets: [
       {
         data: positiveAccounts.map((account) => account.balance),
-        backgroundColor: positiveAccounts.map((account) => account.color),
+        backgroundColor: positiveAccounts.map((account) => {
+          // Make colors slightly transparent
+          const color = account.color;
+          return color.replace(")", ", 0.85)").replace("rgb", "rgba");
+        }),
         borderColor: positiveAccounts.map((account) => account.color),
-        borderWidth: 1,
+        borderWidth: 2,
         hoverOffset: 8,
+        hoverBorderColor: "#ffffff",
       },
     ],
   };
@@ -78,21 +117,62 @@ export default function AccountsChart({ accounts }) {
       style={{
         position: "relative",
         width: "100%",
-        height: "330px",
-        marginBottom: "1.5rem",
+        maxWidth: "550px",
+        height: "300px", // Reduced height
+        margin: "0 auto 1.5rem auto", // Centered with auto margins
+        padding: "10px",
+        borderRadius: "10px",
+        background:
+          "linear-gradient(180deg, rgba(248, 250, 252, 0.5) 0%, rgba(255, 255, 255, 0) 100%)",
       }}
     >
       <h3
         style={{
           textAlign: "center",
-          marginBottom: "0.75rem",
-          fontSize: "0.9rem",
-          color: "#64748b",
+          marginBottom: "0.5rem",
+          fontSize: "0.95rem",
+          fontWeight: "600",
+          color: "#334155",
         }}
       >
         Distribusi Aset
       </h3>
-      <Pie data={data} options={options} />
+
+      <div style={{ position: "relative", height: "calc(100% - 25px)" }}>
+        <Doughnut ref={chartRef} data={data} options={options} />
+
+        {positiveAccounts.length > 0 && (
+          <div
+            style={{
+              position: "absolute",
+              top: "40%", // Moved up to accommodate legend at bottom
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: "500",
+                color: "#64748b",
+                marginBottom: "2px",
+              }}
+            >
+              TOTAL
+            </div>
+            <div
+              style={{
+                fontSize: "18px",
+                fontWeight: "700",
+                color: "#0f172a",
+              }}
+            >
+              ${totalBalance.toFixed(2)}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
