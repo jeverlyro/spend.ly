@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./login.module.css";
-import { FiMail, FiLock, FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiMail, FiLock } from "react-icons/fi";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -89,6 +89,16 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      // Redirect to the backend Google authentication endpoint
+      window.location.href = "http://localhost:5000/api/auth/google";
+    } catch (error) {
+      console.error("Google login error:", error);
+      setErrorMsg("Terjadi kesalahan saat login dengan Google.");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.formCard}>
@@ -156,7 +166,11 @@ export default function Login() {
           <span>atau</span>
         </div>
 
-        <button className={styles.googleButton}>
+        <button
+          type="button"
+          className={styles.googleButton}
+          onClick={handleGoogleLogin}
+        >
           <Image src="/google.svg" alt="Ikon Google" width={18} height={18} />
           Masuk dengan Google
         </button>
@@ -167,6 +181,46 @@ export default function Login() {
             Daftar
           </Link>
         </p>
+      </div>
+    </div>
+  );
+}
+
+export function AuthCallback() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const token = searchParams.get("token");
+    const name = searchParams.get("name");
+    const email = searchParams.get("email");
+    const photo = searchParams.get("photo");
+
+    if (token) {
+      // Store user data in localStorage
+      localStorage.setItem("userToken", token);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("isLoggedIn", "true");
+
+      if (photo) {
+        localStorage.setItem("userPhoto", photo);
+      }
+
+      // Redirect to dashboard
+      router.push("/dashboard");
+    } else {
+      // Handle error case
+      router.push("/login?error=authentication_failed");
+    }
+  }, [router, searchParams]);
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.formCard}>
+        <h1 className={styles.title}>Proses Autentikasi</h1>
+        <p className={styles.subtitle}>Mohon tunggu sebentar...</p>
+        <div className={styles.loadingSpinner}></div>
       </div>
     </div>
   );
