@@ -123,7 +123,7 @@ export default function WalletPage() {
           <div className={styles.summaryItem} style={{ gridColumn: "1 / -1" }}>
             <h3>Total Saldo</h3>
             <p className={totalBalance >= 0 ? styles.balance : styles.expense}>
-              ${Math.abs(totalBalance).toFixed(2)}
+              Rp{Math.abs(totalBalance).toLocaleString("id-ID")}
             </p>
           </div>
         </div>
@@ -174,8 +174,8 @@ export default function WalletPage() {
                     account.balance >= 0 ? styles.income : ""
                   }`}
                 >
-                  {account.balance >= 0 ? "+" : "-"}$
-                  {Math.abs(account.balance).toFixed(2)}
+                  {account.balance >= 0 ? "+" : "-"}Rp
+                  {Math.abs(account.balance).toLocaleString("id-ID")}
                 </p>
               </div>
             ))
@@ -205,7 +205,7 @@ export default function WalletPage() {
       )}
 
       <footer className={styles.footer}>
-        <p>&copy; 2023 Spend.ly - Lacak pengeluaran Anda</p>
+        <p>&copy; 2025 Spend.ly - Lacak pengeluaran Anda</p>
       </footer>
     </div>
   );
@@ -290,14 +290,14 @@ function AccountModal({ onClose, onAdd }) {
           <div className={styles.modalGroup}>
             <label htmlFor="balance">Saldo Saat Ini</label>
             <div className={styles.amountInput}>
-              <span>$</span>
+              <span>Rp</span>
               <input
                 id="balance"
                 type="number"
                 step="0.01"
                 value={balance}
                 onChange={(e) => setBalance(e.target.value)}
-                placeholder="0.00"
+                placeholder="0"
                 required
                 className={styles.modalInput}
               />

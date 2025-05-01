@@ -196,15 +196,19 @@ export default function Dashboard() {
         <div className={styles.summary}>
           <div className={styles.summaryItem}>
             <h3>Saldo</h3>
-            <p className={styles.balance}>${balance.toFixed(2)}</p>
+            <p className={styles.balance}>
+              Rp{balance.toLocaleString("id-ID")}
+            </p>
           </div>
           <div className={styles.summaryItem}>
             <h3>Pemasukan</h3>
-            <p className={styles.income}>${income.toFixed(2)}</p>
+            <p className={styles.income}>Rp{income.toLocaleString("id-ID")}</p>
           </div>
           <div className={styles.summaryItem}>
             <h3>Pengeluaran</h3>
-            <p className={styles.expense}>${expenses.toFixed(2)}</p>
+            <p className={styles.expense}>
+              Rp{expenses.toLocaleString("id-ID")}
+            </p>
           </div>
         </div>
 
@@ -279,8 +283,8 @@ export default function Dashboard() {
                     transaction.amount > 0 ? styles.income : ""
                   }`}
                 >
-                  {transaction.amount > 0 ? "+" : "-"}$
-                  {Math.abs(transaction.amount).toFixed(2)}
+                  {transaction.amount > 0 ? "+" : "-"}Rp
+                  {Math.abs(transaction.amount).toLocaleString("id-ID")}
                 </p>
               </div>
             ))
@@ -332,7 +336,7 @@ export default function Dashboard() {
       )}
 
       <footer className={styles.footer}>
-        <p>&copy; 2023 Spend.ly - Lacak pengeluaran Anda</p>
+        <p>&copy; 2025 Spend.ly - Lacak pengeluaran Anda</p>
       </footer>
     </div>
   );
@@ -430,7 +434,7 @@ function TransactionModal({ onClose, onAdd }) {
           <div className={styles.modalGroup}>
             <label htmlFor="amount">Jumlah</label>
             <div className={styles.amountInput}>
-              <span>$</span>
+              <span className={styles.currencySymbol}>Rp</span>
               <input
                 id="amount"
                 type="number"
@@ -438,9 +442,10 @@ function TransactionModal({ onClose, onAdd }) {
                 min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
+                placeholder="0"
                 required
-                className={styles.modalInput}
+                className={`${styles.modalInput} ${styles.amountInputField}`}
+                style={{ paddingLeft: "2.5rem" }}
               />
             </div>
           </div>
@@ -581,8 +586,8 @@ function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
                   transaction.amount > 0 ? styles.income : styles.expense
                 }`}
               >
-                {transaction.amount > 0 ? "+" : "-"}$
-                {Math.abs(transaction.amount).toFixed(2)}
+                {transaction.amount > 0 ? "+" : "-"}Rp
+                {Math.abs(transaction.amount).toLocaleString("id-ID")}
               </p>
             </div>
           </div>
@@ -625,16 +630,6 @@ function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
         </div>
 
         <div className={styles.transactionActions}>
-          <button
-            className={`${styles.actionButton} ${styles.editButton}`}
-            onClick={() => {
-              onClose();
-              onEdit(transaction);
-            }}
-          >
-            <FiEdit2 size={18} />
-            <span>Edit</span>
-          </button>
           <button
             className={`${styles.actionButton} ${styles.deleteButton}`}
             onClick={() => {

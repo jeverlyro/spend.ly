@@ -223,7 +223,7 @@ export default function ProfilePage() {
       )}
 
       <footer className={styles.footer}>
-        <p>&copy; 2023 Spend.ly - Lacak pengeluaran Anda</p>
+        <p>&copy; 2025 Spend.ly - Lacak pengeluaran Anda</p>
       </footer>
     </div>
   );
