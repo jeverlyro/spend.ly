@@ -64,7 +64,14 @@ export default function AccountsChart({ accounts }) {
           label: (context) => {
             const value = context.raw || 0;
             const percentage = ((value / totalBalance) * 100).toFixed(1);
-            return [`$${value.toFixed(2)}`, `${percentage}% dari total`];
+            // Format as Indonesian Rupiah
+            const formattedValue = new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(value);
+            return [`${formattedValue}`, `${percentage}% dari total`];
           },
         },
       },
@@ -168,7 +175,12 @@ export default function AccountsChart({ accounts }) {
                 color: "#0f172a",
               }}
             >
-              ${totalBalance.toFixed(2)}
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }).format(totalBalance)}
             </div>
           </div>
         )}

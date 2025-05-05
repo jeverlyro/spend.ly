@@ -294,8 +294,8 @@ export default function Dashboard() {
                 Anda belum memiliki transaksi terbaru
               </p>
               <p className={styles.emptyStateSubtext}>
-                Tambahkan transaksi pertama Anda dengan menekan tombol "Tambah
-                Transaksi"
+                Tambahkan transaksi pertama Anda dengan menekan tombol
+                &quot;Tambah Transaksi&quot;
               </p>
             </div>
           )}

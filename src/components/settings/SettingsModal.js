@@ -172,7 +172,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                     <div className={styles.formAttachment}>
                       <label className={styles.attachmentLabel}>
                         <input type="file" className={styles.fileInput} />
-                        <span>+ Tambahkan Tangkapan Layar (opsional)</span>
+                        <span>+ Tambahkan Screenshot (opsional)</span>
                       </label>
                       <p className={styles.fileHint}>Ukuran file maks: 5MB</p>
                     </div>

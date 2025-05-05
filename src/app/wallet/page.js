@@ -183,8 +183,8 @@ export default function WalletPage() {
             <div className={styles.emptyStateContainer}>
               <p className={styles.emptyState}>Anda belum memiliki rekening</p>
               <p className={styles.emptyStateSubtext}>
-                Tambahkan rekening pertama Anda dengan menekan tombol "Tambah
-                Rekening"
+                Tambahkan rekening pertama Anda dengan menekan tombol
+                &quot;Tambah Rekening&quot;
               </p>
             </div>
           )}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image"; // Add this import
 import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
@@ -135,10 +136,13 @@ export default function ProfilePage() {
           <div className={styles.profileHeader}>
             <div className={styles.profileAvatar}>
               {userPhoto ? (
-                <img
+                <Image
                   src={userPhoto}
                   alt="Avatar"
                   className={styles.avatarImage}
+                  width={80}
+                  height={80}
+                  priority
                 />
               ) : (
                 <div className={styles.defaultAvatar}>
@@ -322,7 +326,13 @@ function ProfileEditModal({ onClose }) {
           <div className={styles.photoUploadContainer}>
             <div className={styles.avatarPreview}>
               {photo ? (
-                <img src={photo} alt="Avatar" className={styles.avatarImage} />
+                <Image
+                  src={photo}
+                  alt="Avatar"
+                  className={styles.avatarImage}
+                  width={80}
+                  height={80}
+                />
               ) : (
                 <div className={styles.defaultAvatar}>
                   <FiUser size={32} />

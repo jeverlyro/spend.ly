@@ -116,7 +116,14 @@ export default function TransactionChart({ transactions, month }) {
           },
           label: (context) => {
             const label = context.dataset.label || "";
-            return `${label}: $${context.raw.toFixed(2)}`;
+            // Format as Indonesian Rupiah
+            const formattedValue = new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(context.raw);
+            return `${label}: ${formattedValue}`;
           },
           labelTextColor: (context) => {
             return context.dataset.borderColor;
@@ -161,7 +168,13 @@ export default function TransactionChart({ transactions, month }) {
           padding: 10,
           color: "#64748b",
           callback: (value) => {
-            return "$" + value;
+            // Format y-axis ticks as Indonesian Rupiah
+            return new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(value);
           },
           maxTicksLimit: 5,
         },
