@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
-import AccountsChart from "@/components/charts/AccountsChart";
 import {
   FiPlus,
   FiCreditCard,
   FiDollarSign,
   FiBarChart2,
+  FiArrowUpRight,
+  FiArrowDownLeft,
   FiX,
   FiCheck,
   FiChevronRight,
@@ -23,12 +24,12 @@ const items = [
   {
     icon: <FaHouse size={18} />,
     label: "Beranda",
-    onClick: () => (window.location.href = "/dashboard"),
+    onClick: () => (window.location.href = "/"),
   },
   {
     icon: <IoIosWallet size={18} />,
     label: "Dompet",
-    onClick: () => {},
+    onClick: () => {}, // current page
   },
   {
     icon: <FaUser size={18} />,
@@ -37,49 +38,49 @@ const items = [
   },
 ];
 
+const initialAccounts = [
+  {
+    id: 1,
+    name: "Rekening Utama",
+    type: "Giro",
+    balance: 2350.75,
+    icon: <FiDollarSign size={20} />,
+    color: "#0070f3",
+  },
+  {
+    id: 2,
+    name: "Tabungan",
+    type: "Tabungan",
+    balance: 8750.42,
+    icon: <FiBarChart2 size={20} />,
+    color: "#10b981",
+  },
+  {
+    id: 3,
+    name: "Kartu Kredit",
+    type: "Kredit",
+    balance: -450.25,
+    icon: <FiCreditCard size={20} />,
+    color: "#ef4444",
+  },
+];
+
 export default function WalletPage() {
-  const [accounts, setAccounts] = useState([]);
+  const [accounts, setAccounts] = useState(initialAccounts);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Check authentication with backend
+  // Check authentication
   useEffect(() => {
-    const token = localStorage.getItem("userToken");
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-    async function verifyAuth() {
-      try {
-        const response = await fetch("http://localhost:5000/api/auth/verify", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          // Token invalid, clear localStorage and redirect
-          localStorage.removeItem("userToken");
-          localStorage.removeItem("userName");
-          localStorage.removeItem("userEmail");
-          localStorage.removeItem("userPhoto");
-
-          router.push("/login");
-          return;
-        }
-
-        // User is authenticated
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Authentication error:", error);
-        router.push("/login");
-      }
-    }
-
-    if (!token) {
+    if (!isLoggedIn) {
       router.push("/login");
-    } else {
-      verifyAuth();
+      return;
     }
+
+    setIsLoading(false);
   }, [router]);
 
   const totalBalance = accounts.reduce(
@@ -123,20 +124,9 @@ export default function WalletPage() {
           <div className={styles.summaryItem} style={{ gridColumn: "1 / -1" }}>
             <h3>Total Saldo</h3>
             <p className={totalBalance >= 0 ? styles.balance : styles.expense}>
-              Rp{Math.abs(totalBalance).toLocaleString("id-ID")}
+              ${Math.abs(totalBalance).toFixed(2)}
             </p>
           </div>
-        </div>
-
-        {/* Chart Section */}
-        <div className={styles.chartContainer}>
-          {accounts.length > 0 ? (
-            <AccountsChart accounts={accounts} />
-          ) : (
-            <p className={styles.emptyState}>
-              Belum ada rekening untuk ditampilkan dalam grafik
-            </p>
-          )}
         </div>
 
         <div className={styles.actions}>
@@ -174,20 +164,48 @@ export default function WalletPage() {
                     account.balance >= 0 ? styles.income : ""
                   }`}
                 >
-                  {account.balance >= 0 ? "+" : "-"}Rp
-                  {Math.abs(account.balance).toLocaleString("id-ID")}
+                  {account.balance >= 0 ? "+" : "-"}$
+                  {Math.abs(account.balance).toFixed(2)}
                 </p>
               </div>
             ))
           ) : (
-            <div className={styles.emptyStateContainer}>
-              <p className={styles.emptyState}>Anda belum memiliki rekening</p>
-              <p className={styles.emptyStateSubtext}>
-                Tambahkan rekening pertama Anda dengan menekan tombol "Tambah
-                Rekening"
-              </p>
-            </div>
+            <p className={styles.emptyState}>Tidak ada rekening ditemukan</p>
           )}
+        </div>
+
+        <div className={styles.transactions} style={{ marginTop: "2rem" }}>
+          <h2>Transfer Terbaru</h2>
+
+          <div className={styles.transaction}>
+            <div
+              className={styles.transactionIcon}
+              style={{ color: "#0070f3", background: "#0070f315" }}
+            >
+              <FiArrowUpRight size={20} />
+            </div>
+            <div className={styles.transactionDetails}>
+              <h4>Ke Rekening Tabungan</h4>
+              <p>12 Sep, 2023</p>
+            </div>
+            <p className={styles.transactionAmount}>-$500.00</p>
+          </div>
+
+          <div className={styles.transaction}>
+            <div
+              className={styles.transactionIcon}
+              style={{ color: "#10b981", background: "#10b98115" }}
+            >
+              <FiArrowDownLeft size={20} />
+            </div>
+            <div className={styles.transactionDetails}>
+              <h4>Dari Rekening Utama</h4>
+              <p>10 Sep, 2023</p>
+            </div>
+            <p className={`${styles.transactionAmount} ${styles.income}`}>
+              +$500.00
+            </p>
+          </div>
         </div>
       </main>
 
@@ -205,7 +223,7 @@ export default function WalletPage() {
       )}
 
       <footer className={styles.footer}>
-        <p>&copy; 2025 Spend.ly - Lacak pengeluaran Anda</p>
+        <p>&copy; 2023 Spend.ly - Lacak pengeluaran Anda</p>
       </footer>
     </div>
   );
@@ -290,14 +308,14 @@ function AccountModal({ onClose, onAdd }) {
           <div className={styles.modalGroup}>
             <label htmlFor="balance">Saldo Saat Ini</label>
             <div className={styles.amountInput}>
-              <span>Rp</span>
+              <span>$</span>
               <input
                 id="balance"
                 type="number"
                 step="0.01"
                 value={balance}
                 onChange={(e) => setBalance(e.target.value)}
-                placeholder="0"
+                placeholder="0.00"
                 required
                 className={styles.modalInput}
               />

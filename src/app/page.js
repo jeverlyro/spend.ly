@@ -10,20 +10,19 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Check if the user has seen onboarding
+    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+
     // Check if user is logged in
     const isLoggedIn = localStorage.getItem("isLoggedIn");
-    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
-    const showOnboarding = localStorage.getItem("showOnboarding");
 
     // Determine where to redirect
-    if (isLoggedIn === "true") {
-      router.push("/dashboard");
-    } else if (showOnboarding === "true" || !hasSeenOnboarding) {
-      // Show onboarding if explicitly set to or if user hasn't seen it before
+    if (!hasSeenOnboarding) {
       router.push("/onboarding");
-    } else {
-      // Otherwise go to login
+    } else if (!isLoggedIn) {
       router.push("/login");
+    } else {
+      router.push("/dashboard");
     }
   }, [router]);
 

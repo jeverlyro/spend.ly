@@ -71,8 +71,8 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
               {!showSupportForm ? (
                 <>
                   <h3>Hubungi Kami</h3>
-                  <p>Email: spendlymail@gmail.com</p>
-                  <p>Telepon: +62 858-2345-9380</p>
+                  <p>Email: support@spend.ly</p>
+                  <p>Telepon: +1 (555) 123-4567</p>
 
                   <h3>FAQ</h3>
                   <div className={styles.faqItem}>
@@ -85,15 +85,15 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                   <div className={styles.faqItem}>
                     <h4>Bisakah saya mengekspor data pengeluaran saya?</h4>
                     <p>
-                      Ya! Buka Dashboard, tekan ikon menu dan pilih &quot;Ekspor
+                      Ya! Buka Dompet, tekan ikon menu dan pilih &quot;Ekspor
                       Data&quot;.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
-                    <h4>Bagaimana cara mengubah profil saya?</h4>
+                    <h4>Bagaimana cara mengubah kata sandi saya?</h4>
                     <p>
-                      Di halaman Profil, tekan &quot;Edit Profil&quot; dan ubah
-                      nama lalu tekan save changes.
+                      Di halaman Profil, tekan &quot;Edit Profil&quot; dan pilih
+                      opsi &quot;Ubah Kata Sandi&quot;.
                     </p>
                   </div>
 
@@ -101,7 +101,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                     className={styles.supportButton}
                     onClick={() => setShowSupportForm(true)}
                   >
-                    Buat Support Ticket
+                    Buat Tiket Dukungan
                   </button>
                 </>
               ) : (
@@ -113,7 +113,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                     <FiArrowLeft size={16} /> Kembali ke Bantuan
                   </button>
 
-                  <h3>Kirim Support Ticket</h3>
+                  <h3>Kirim Tiket Dukungan</h3>
                   <p className={styles.supportFormIntro}>
                     Mohon isi formulir di bawah ini dan tim dukungan kami akan
                     segera menghubungi Anda.
@@ -182,7 +182,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                       className={styles.submitSupportButton}
                     >
                       <FiSend size={18} />
-                      Kirim Ticket
+                      Kirim Tiket
                     </button>
                   </form>
                 </div>
@@ -212,22 +212,21 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
               <p className={styles.appVersion}>Versi 1.0.0</p>
               <p className={styles.appDescription}>
                 Spend.ly membantu Anda melacak pengeluaran dan pendapatan harian
-                dengan desain interface yang sederhana dan elegan. Tetapkan
-                anggaran, kategorikan transaksi, dan dapatkan wawasan tentang
-                kebiasaan belanja Anda untuk membuat keputusan keuangan yang
-                lebih baik.
+                dengan antarmuka yang sederhana dan elegan. Tetapkan anggaran,
+                kategorikan transaksi, dan dapatkan wawasan tentang kebiasaan
+                belanja Anda untuk membuat keputusan keuangan yang lebih baik.
               </p>
 
               <h3>Tim Pengembang</h3>
               <ul className={styles.teamList}>
-                <li>I Kadek Tresna Jeverly - Full-stack</li>
-                <li>Arturito Imanuel Rawung - Backend</li>
-                <li>Revando Aruperes - Fullstack</li>
-                <li>Ricky Mambu - PR</li>
+                <li>I Kadek Tresna Jeverly - Pengembang Utama</li>
+                <li>Arturito Imanuel Rawung - Desainer UI/UX</li>
+                <li>Revando Aruperes - Insinyur Backend</li>
+                <li>Ricky Mambu - Pengembang Mobile</li>
               </ul>
 
               <div className={styles.legalInfo}>
-                <p>&copy; 2025 Spend.ly - All rights reserved.</p>
+                <p>&copy; 2023 Spend.ly - Hak cipta dilindungi</p>
                 <div className={styles.legalLinks}>
                   <button
                     onClick={() => navigateTo("terms")}
@@ -258,7 +257,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
             </div>
             <div className={`${styles.settingsContent} ${styles.legalContent}`}>
               <p className={styles.lastUpdated}>
-                Terakhir Diperbarui: 25 April 2025
+                Terakhir Diperbarui: 1 November 2023
               </p>
 
               <h3>1. Penerimaan Ketentuan</h3>
@@ -362,7 +361,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
             </div>
             <div className={`${styles.settingsContent} ${styles.legalContent}`}>
               <p className={styles.lastUpdated}>
-                Terakhir Diperbarui: 25 April 2025
+                Terakhir Diperbarui: 1 November 2023
               </p>
 
               <h3>1. Pendahuluan</h3>
