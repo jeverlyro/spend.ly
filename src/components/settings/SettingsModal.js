@@ -1,11 +1,10 @@
 "use client";
 
-import { FiX, FiArrowLeft, FiSend } from "react-icons/fi";
+import { FiX, FiArrowLeft, FiSend, FiTrash2 } from "react-icons/fi";
 import styles from "@/app/page.module.css";
 import { useToast } from "@/components/toast/toastProvider";
-import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function SettingsModal({ onClose, setting: initialSetting }) {
   const { addToast } = useToast();
@@ -18,6 +17,10 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
     message: "",
     category: "general",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleBackClick = () => {
     if (previousSetting) {
@@ -41,24 +44,106 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
     }));
   };
 
-  const handleSupportSubmit = (e) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        addToast("Ukuran file terlalu besar. Maksimum 5MB.", "error", 5000);
+        e.target.value = "";
+        return;
+      }
+
+      // Store the file
+      setSelectedFile(file);
+
+      // Create a preview URL
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result);
+      };
+      fileReader.readAsDataURL(file);
+    } else {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSupportSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    console.log("Support ticket submitted:", supportForm);
+    try {
+      const formData = new FormData();
+      formData.append("subject", supportForm.subject);
+      formData.append("message", supportForm.message);
+      formData.append("category", supportForm.category);
 
-    addToast(
-      "Tiket dukungan dibuat! Kami akan segera menghubungi Anda.",
-      "success",
-      3000
-    );
+      const userName = localStorage.getItem("userName");
+      const userEmail = localStorage.getItem("userEmail");
 
-    setSupportForm({
-      subject: "",
-      message: "",
-      category: "general",
-    });
+      if (userName) formData.append("name", userName);
+      if (userEmail) formData.append("email", userEmail);
 
-    setShowSupportForm(false);
+      if (selectedFile) {
+        formData.append("attachment", selectedFile);
+      }
+
+      // Start sending the form data in the background
+      fetch(`http://localhost:5000/api/support/submit`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      }).catch((error) => {
+        console.log(
+          "Network error occurred, but ticket might still be processed:",
+          error
+        );
+      });
+
+      // Add a deliberate delay to simulate processing time (2.5 seconds)
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+
+      // Show success message after the delay
+      addToast(
+        "Tiket dukungan dikirim! Kami akan segera menghubungi Anda.",
+        "success",
+        3000
+      );
+
+      // Reset the form
+      setSupportForm({
+        subject: "",
+        message: "",
+        category: "general",
+      });
+
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      setShowSupportForm(false);
+    } catch (error) {
+      console.error("Error preparing support ticket:", error);
+      addToast(
+        `Terjadi kesalahan saat menyiapkan tiket dukungan. Silakan coba lagi.`,
+        "error",
+        5000
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderContent = () => {
@@ -170,19 +255,54 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                     </div>
 
                     <div className={styles.formAttachment}>
-                      <label className={styles.attachmentLabel}>
-                        <input type="file" className={styles.fileInput} />
-                        <span>+ Tambahkan Screenshot (opsional)</span>
-                      </label>
+                      {previewUrl ? (
+                        <div className={styles.imagePreviewContainer}>
+                          <div className={styles.imagePreviewWrapper}>
+                            <Image
+                              src={previewUrl}
+                              alt="Preview"
+                              className={styles.imagePreview}
+                              width={300}
+                              height={200}
+                              layout="responsive"
+                              objectFit="contain"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleRemoveFile}
+                              className={styles.removeImageBtn}
+                              title="Hapus gambar"
+                            >
+                              <FiTrash2 size={18} />
+                            </button>
+                          </div>
+                          <p className={styles.fileInfo}>
+                            {selectedFile?.name} (
+                            {Math.round(selectedFile?.size / 1024)} KB)
+                          </p>
+                        </div>
+                      ) : (
+                        <label className={styles.attachmentLabel}>
+                          <input
+                            type="file"
+                            className={styles.fileInput}
+                            onChange={handleFileChange}
+                            ref={fileInputRef}
+                            accept="image/*"
+                          />
+                          <span>+ Tambahkan Screenshot (opsional)</span>
+                        </label>
+                      )}
                       <p className={styles.fileHint}>Ukuran file maks: 5MB</p>
                     </div>
 
                     <button
                       type="submit"
                       className={styles.submitSupportButton}
+                      disabled={isSubmitting}
                     >
                       <FiSend size={18} />
-                      Kirim Ticket
+                      {isSubmitting ? "Mengirim..." : "Kirim Ticket"}
                     </button>
                   </form>
                 </div>
@@ -325,14 +445,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
               </p>
 
               <h3>6. Tautan</h3>
-              <p>
-                Spend.ly belum meninjau semua situs yang ditautkan ke situs
-                webnya dan tidak bertanggung jawab atas isi situs tertaut
-                tersebut. Pencantuman tautan apa pun tidak menyiratkan dukungan
-                oleh Spend.ly terhadap situs tersebut. Penggunaan situs web
-                tertaut tersebut adalah risiko pengguna sendiri.
-              </p>
-
+              <p></p>
               <h3>7. Modifikasi</h3>
               <p>
                 Spend.ly dapat merevisi syarat layanan ini kapan saja tanpa

@@ -39,13 +39,11 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store user data in localStorage
         localStorage.setItem("userToken", data.token);
         localStorage.setItem("userName", data.user.name);
         localStorage.setItem("userEmail", data.user.email);
 
-        // Redirect to dashboard
-        router.push("/dashboard");
+        router.push("/login");
       } else {
         setErrorMsg(data.message || "Registrasi gagal. Silakan coba lagi.");
       }
