@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import styles from "../page.module.css";
+import styles from "./dashboard.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
 import {

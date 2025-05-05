@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "../page.module.css";
+import styles from "./wallet.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
 import AccountsChart from "@/components/charts/AccountsChart";

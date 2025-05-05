@@ -1,7 +1,7 @@
 "use client";
 
 import { FiX, FiArrowLeft, FiSend } from "react-icons/fi";
-import styles from "@/app/page.module.css";
+import styles from "./settings.module.css";
 import { useToast } from "@/components/toast/toastProvider";
 import Link from "next/link";
 import Image from "next/image";

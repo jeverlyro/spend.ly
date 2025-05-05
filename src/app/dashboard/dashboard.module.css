@@ -1,0 +1,563 @@
+/* Import common styles */
+@import "../../styles/common.module.css";
+
+/* Summary Cards */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summaryItem {
+  background-color: white;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform var(--transition-standard),
+    box-shadow var(--transition-standard);
+}
+
+.summaryItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.summaryItem h3 {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 0.5rem 0;
+  font-weight: 500;
+}
+
+.balance {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: #0f172a;
+}
+
+.income {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: #10b981;
+}
+
+.expense {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: #ef4444;
+}
+
+/* Actions Bar */
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.actions button {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all var(--transition-standard);
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  color: #334155;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.actions button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.addText {
+  font-family: var(--font-geist-sans);
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Filter and Calendar styles */
+.datePickerButton {
+  padding: 0.625rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-family: var(--font-geist-sans);
+  background-color: white;
+  font-size: 0.875rem;
+  color: #334155;
+  min-height: 42px;
+  cursor: pointer;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  transition: all var(--transition-standard);
+}
+
+.datePickerButton:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+}
+
+.datePickerButton svg {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.filterSelectWrapper {
+  position: relative;
+  flex: 1;
+  max-width: 100%;
+}
+
+.filterSelect {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-family: var(--font-geist-sans);
+  background-color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+  min-height: 42px;
+  cursor: pointer;
+  transition: all var(--transition-standard);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  position: relative;
+  z-index: 1;
+}
+
+.filterSelect:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230070f3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Calendar Modal Styles */
+.calendarModal {
+  background-color: white;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 360px;
+  padding: 1.75rem;
+  position: relative;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15),
+    0 10px 20px -5px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.calendarModal h2 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.35rem;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.calendarTitle {
+  font-weight: 500;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.calendarNav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.calendarNavButton {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: all var(--transition-standard);
+}
+
+.calendarNavButton:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.monthItem {
+  aspect-ratio: 1;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: all var(--transition-standard);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.monthItem:hover:not(.monthItemSelected) {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.monthItemSelected {
+  background-color: #0070f3;
+  color: white;
+  border-color: #0070f3;
+  box-shadow: 0 2px 8px rgba(0, 112, 243, 0.25);
+}
+
+.monthItemCurrent:not(.monthItemSelected) {
+  border: 1px dotted #0070f3;
+  font-weight: 600;
+}
+
+/* Transactions List */
+.transactions {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  transition: all var(--transition-standard);
+}
+
+.transactions:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.transactions h2 {
+  font-size: 1.125rem;
+  margin: 0 0 1.5rem 0;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transactions h2::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(to bottom, #0070f3, #00d2ff);
+  border-radius: 2px;
+}
+
+.transaction {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: all var(--transition-standard);
+  animation: slideIn 0.3s ease-out;
+  cursor: pointer;
+}
+
+.transaction:last-child {
+  margin-bottom: 0;
+}
+
+.transaction:hover {
+  background-color: var(--gray-alpha-100);
+  transform: translateX(4px);
+}
+
+.transactionIcon {
+  width: 44px;
+  height: 44px;
+  background-color: #f8fafc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  color: #64748b;
+  transition: all var(--transition-standard);
+  flex-shrink: 0;
+}
+
+.transaction:hover .transactionIcon {
+  transform: scale(1.1);
+  background-color: #f1f5f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.transactionDetails {
+  flex: 1;
+}
+
+.transactionDetails h4 {
+  font-size: 0.95rem;
+  margin: 0 0 0.25rem 0;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.transactionDetails p {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.transactionDetails p::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+}
+
+.transactionAmount {
+  font-family: var(--font-geist-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #ef4444;
+  margin: 0;
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  background-color: #fef2f2;
+  transition: all var(--transition-standard);
+}
+
+.transaction:hover .transactionAmount {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.transactionAmount.income {
+  color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 0;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Transaction Modal styles */
+.typeToggle {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.typeButton {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background-color: white;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-standard);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.typeButton:hover:not(.active) {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.typeButton.active {
+  background-color: #0070f3;
+  color: white;
+  border-color: #0070f3;
+  box-shadow: 0 2px 8px rgba(0, 112, 243, 0.25);
+}
+
+.modalInput {
+  width: 100%;
+  padding: 0.875rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  font-family: var(--font-geist-sans);
+  font-size: 0.875rem;
+  color: #0f172a;
+  background-color: white;
+  transition: all var(--transition-standard);
+}
+
+.modalInput:focus {
+  outline: none;
+  border-color: #0070f3;
+  box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+}
+
+.modalInput:hover:not(:focus) {
+  border-color: #cbd5e1;
+}
+
+.amountInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.amountInput span {
+  position: absolute;
+  left: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.amountInput input {
+  padding-left: 1.75rem;
+}
+
+.modalSelect {
+  width: 100%;
+  padding: 0.875rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  font-family: var(--font-geist-sans);
+  font-size: 0.875rem;
+  color: #334155;
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.5rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: all var(--transition-standard);
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .filterSelect {
+    padding-left: 0.875rem;
+    padding-right: 1.5rem;
+    font-size: 0.8rem;
+  }
+
+  .actions {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .actions button {
+    padding: 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  .actions button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .monthGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .monthItem {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .actions {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .actions button {
+    padding: 0.625rem 0.375rem;
+    font-size: 0.75rem;
+  }
+}

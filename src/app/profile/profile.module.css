@@ -1,0 +1,198 @@
+/* Import common styles */
+@import "../../styles/common.module.css";
+
+/* Profile styles */
+.profileSection {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  transition: all var(--transition-standard);
+}
+
+.profileSection:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profileAvatar {
+  width: 64px;
+  height: 64px;
+  background-color: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0070f3;
+}
+
+.profileInfo h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+  font-family: var(--font-geist-sans);
+}
+
+.profileInfo p {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  font-family: var(--font-geist-sans);
+}
+
+.editProfileButton {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-standard);
+  font-family: var(--font-geist-sans);
+}
+
+.editProfileButton:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Settings List */
+.transactions {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  transition: all var(--transition-standard);
+}
+
+.transactions:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.transactions h2 {
+  font-size: 1.125rem;
+  margin: 0 0 1.5rem 0;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transactions h2::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(to bottom, #0070f3, #00d2ff);
+  border-radius: 2px;
+}
+
+.transaction {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: all var(--transition-standard);
+  animation: slideIn 0.3s ease-out;
+  cursor: pointer;
+}
+
+.transaction:last-child {
+  margin-bottom: 0;
+}
+
+.transaction:hover {
+  background-color: var(--gray-alpha-100);
+  transform: translateX(4px);
+}
+
+.settingItem {
+  cursor: pointer;
+}
+
+.transactionIcon {
+  width: 44px;
+  height: 44px;
+  background-color: #f8fafc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  transition: all var(--transition-standard);
+  flex-shrink: 0;
+}
+
+.transaction:hover .transactionIcon {
+  transform: scale(1.1);
+  background-color: #f1f5f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.transactionDetails {
+  flex: 1;
+}
+
+.transactionDetails h4 {
+  font-size: 0.95rem;
+  margin: 0 0 0.25rem 0;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.transactionDetails p {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Logout Button */
+.logoutButton {
+  width: 100%;
+  padding: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  background-color: #fff;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-standard);
+  font-family: var(--font-geist-sans);
+}
+
+.logoutButton:hover {
+  background-color: #fef2f2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
