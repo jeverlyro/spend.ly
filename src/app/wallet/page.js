@@ -134,22 +134,23 @@ export default function WalletPage() {
                   <IoIosWallet size={24} />
                 </div>
               </div>
-              <div className={styles.balanceWrapper}>
-                <p className={`${styles.balanceAmount} ${styles.animatedValue}`}>
-                  <span className={styles.currencySymbol}>Rp</span>
-                  {Math.abs(totalBalance).toLocaleString("id-ID")}
-                </p>
-                <div className={styles.balanceTrend}>
-                  <IoMdTrendingUp size={20} />
-                  <span>+2.5%</span>
+              
+              <div className={styles.balanceSection}>
+                <div className={styles.balanceWrapper}>
+                  <p className={`${styles.balanceAmount} ${styles.animatedValue}`}>
+                    <span className={styles.currencySymbol}></span>
+                    {Math.abs(totalBalance).toLocaleString("id-ID")}
+                  </p>
+                </div>
+                
+                <div className={styles.balanceInfo}>
+                  <div className={styles.statItem}>
+                    <FaRegChartBar size={16} />
+                    <span>{accounts.length} Rekening Aktif</span>
+                  </div>
                 </div>
               </div>
-              <div className={styles.summaryStats}>
-                <div className={styles.statItem}>
-                  <FaRegChartBar size={16} />
-                  <span>{accounts.length} Rekening Aktif</span>
-                </div>
-              </div>
+              
               <div className={styles.glowEffect} />
             </div>
           </div>
@@ -299,7 +300,7 @@ function AccountModal({ onClose, onAdd }) {
           <div className={styles.modalGroup}>
             <label htmlFor="balance">Saldo Saat Ini</label>
             <div className={styles.amountInput}>
-              <span>Rp</span>
+              <span></span>
               <input
                 id="balance"
                 type="number"
