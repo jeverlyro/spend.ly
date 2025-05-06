@@ -127,6 +127,7 @@ export default function AccountsChart({ accounts }) {
         borderRadius: "10px",
         background:
           "linear-gradient(180deg, rgba(248, 250, 252, 0.5) 0%, rgba(255, 255, 255, 0) 100%)",
+        fontFamily: "var(--font-geist-sans)",
       }}
     >
       <h3
@@ -136,6 +137,7 @@ export default function AccountsChart({ accounts }) {
           fontSize: "0.95rem",
           fontWeight: "600",
           color: "#334155",
+          fontFamily: "var(--font-geist-sans)",
         }}
       >
         Distribusi Aset
@@ -152,6 +154,7 @@ export default function AccountsChart({ accounts }) {
               left: "50%",
               transform: "translate(-50%, -50%)",
               textAlign: "center",
+              fontFamily: "var(--font-geist-sans)",
             }}
           >
             <div
@@ -160,6 +163,7 @@ export default function AccountsChart({ accounts }) {
                 fontWeight: "500",
                 color: "#64748b",
                 marginBottom: "2px",
+                fontFamily: "var(--font-geist-sans)",
               }}
             >
               TOTAL
@@ -169,6 +173,7 @@ export default function AccountsChart({ accounts }) {
                 fontSize: "18px",
                 fontWeight: "700",
                 color: "#0f172a",
+                fontFamily: "var(--font-geist-sans)",
               }}
             >
               {new Intl.NumberFormat("id-ID", {

@@ -39,6 +39,7 @@ export default function Dashboard() {
   const initialDisplayMonth = currentMoment.format("MMMM YYYY");
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [allTransactions, setAllTransactions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [filter, setFilter] = useState("all");
@@ -159,19 +160,43 @@ export default function Dashboard() {
             amount: transaction.amount,
             category: transaction.category,
             date: formattedDate,
+            rawDate: transaction.date || new Date().toISOString(),
             icon,
           };
         });
 
-        setTransactions(processedTransactions);
+        setAllTransactions(processedTransactions);
+        filterTransactionsByMonth(processedTransactions, month);
       } catch (error) {
         console.error("Error fetching transactions:", error);
         setTransactions([]);
+        setAllTransactions([]);
       }
     }
 
     verifyAuth();
-  }, [router]);
+  }, [router, month]);
+
+  const filterTransactionsByMonth = (transactionsToFilter, selectedMonth) => {
+    const [year, monthNum] = selectedMonth.split("-").map(Number);
+
+    const filtered = transactionsToFilter.filter((transaction) => {
+      const transactionDate = moment(transaction.rawDate);
+      return (
+        transactionDate.year() === year &&
+        transactionDate.month() === monthNum - 1
+      );
+    });
+
+    setTransactions(filtered);
+  };
+
+  const handleMonthSelect = (newMonth, monthName) => {
+    setMonth(newMonth);
+    setDisplayMonth(monthName);
+    setShowCalendarModal(false);
+    filterTransactionsByMonth(allTransactions, newMonth);
+  };
 
   const items = [
     {
@@ -242,21 +267,18 @@ export default function Dashboard() {
         amount: savedTransaction.amount,
         category: savedTransaction.category,
         date: moment(savedTransaction.date).format("D MMM YYYY"),
+        rawDate: savedTransaction.date,
         icon: transaction.icon,
       };
 
-      setTransactions([newTransaction, ...transactions]);
+      const updatedAllTransactions = [newTransaction, ...allTransactions];
+      setAllTransactions(updatedAllTransactions);
+      filterTransactionsByMonth(updatedAllTransactions, month);
       setShowModal(false);
     } catch (error) {
       console.error("Error adding transaction:", error);
       alert(`Gagal menambahkan transaksi: ${error.message}`);
     }
-  };
-
-  const handleMonthSelect = (newMonth, monthName) => {
-    setMonth(newMonth);
-    setDisplayMonth(monthName);
-    setShowCalendarModal(false);
   };
 
   const handleEditTransaction = (transaction) => {
@@ -286,6 +308,8 @@ export default function Dashboard() {
         throw new Error(errorData.message || `Error: ${response.status}`);
       }
 
+      const updatedAllTransactions = allTransactions.filter((t) => t.id !== id);
+      setAllTransactions(updatedAllTransactions);
       setTransactions(transactions.filter((t) => t.id !== id));
     } catch (error) {
       console.error("Error deleting transaction:", error);
@@ -315,7 +339,6 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Enhance the summary cards with a better layout and 3D effect */}
         <div className={`${styles.summary} ${styles.enhancedSummary}`}>
           <div className={`${styles.summaryCard} ${styles.glassEffect}`}>
             <div className={styles.summaryContent}>
@@ -358,7 +381,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Enhanced charts container */}
         <div className={`${styles.chartContainer} ${styles.enhancedChart}`}>
           <h2 className={styles.sectionTitle}>
             <span className={styles.sectionIcon}>
@@ -385,7 +407,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Enhanced action buttons */}
         <div className={`${styles.actions} ${styles.enhancedActions}`}>
           <button
             className={`${styles.addButton} ${styles.primaryButton}`}
@@ -395,7 +416,7 @@ export default function Dashboard() {
             <span className={styles.addText}>Tambah</span>
           </button>
 
-          {transactions.length > 0 && (
+          {allTransactions.length > 0 && (
             <>
               <div className={styles.filterSelectWrapper}>
                 <select
@@ -425,7 +446,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Enhanced transaction list */}
         <div
           className={`${styles.transactions} ${styles.enhancedTransactions}`}
         >

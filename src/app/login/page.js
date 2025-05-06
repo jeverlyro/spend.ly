@@ -12,15 +12,24 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
+    // Check for registration success
+    if (searchParams.get("registered") === "true") {
+      setSuccessMsg(
+        "Registrasi berhasil! Silakan masuk dengan akun baru Anda."
+      );
+    }
+
     const token = localStorage.getItem("userToken");
 
     if (token) {
       verifyToken(token);
     }
-  }, [router]);
+  }, [router, searchParams]);
 
   const verifyToken = async (token) => {
     try {
@@ -104,6 +113,7 @@ export default function Login() {
         <p className={styles.subtitle}>Masuk ke akun Anda</p>
 
         {errorMsg && <div className={styles.errorAlert}>{errorMsg}</div>}
+        {successMsg && <div className={styles.successAlert}>{successMsg}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>

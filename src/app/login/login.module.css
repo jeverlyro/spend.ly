@@ -405,3 +405,12 @@
     transform: rotate(360deg);
   }
 }
+
+.successAlert {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+}

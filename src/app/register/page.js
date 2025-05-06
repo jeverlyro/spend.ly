@@ -39,11 +39,8 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("userToken", data.token);
-        localStorage.setItem("userName", data.user.name);
-        localStorage.setItem("userEmail", data.user.email);
-
-        router.push("/login");
+        // Add a success message to show on login page
+        router.push("/login?registered=true");
       } else {
         setErrorMsg(data.message || "Registrasi gagal. Silakan coba lagi.");
       }
