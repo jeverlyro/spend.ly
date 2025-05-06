@@ -75,22 +75,16 @@
 .balance {
   font-size: 1.25rem;
   font-weight: 600;
-  
- 
 }
 
 .income {
   font-size: 1.25rem;
   font-weight: 600;
-
-  
 }
 
 .expense {
   font-size: 1.25rem;
   font-weight: 600;
- 
- 
 }
 
 /* Actions Bar */
@@ -669,6 +663,22 @@
 .transactionAmount.income {
   color: #10b981;
   background-color: #f0fdf4;
+}
+
+.currencySymbolPositive {
+  font-family: var(--font-geist-mono);
+  font-weight: 500;
+  display: inline;
+  margin-right: 2px;
+  color: #10b981; /* Same green color as positive amounts */
+}
+
+.currencySymbolNegative {
+  font-family: var(--font-geist-mono);
+  font-weight: 500;
+  display: inline;
+  margin-right: 2px;
+  color: #ef4444; /* Same red color as negative amounts */
 }
 
 .emptyState {
@@ -1267,7 +1277,7 @@
   .summary {
     padding: 0 1rem;
   }
-  
+
   .summaryCard {
     width: 100%;
     max-width: none;
@@ -2180,16 +2190,23 @@
 }
 
 .currencySymbol {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
+  font-family: var(--font-geist-mono);
+  font-weight: 500;
+  display: inline;
 }
 
 .amountInputField {
   position: relative;
   padding-left: 2.5rem !important;
+}
+
+.accountBalance {
+  font-family: var(--font-geist-mono);
+  font-weight: 600;
+  margin-left: auto;
+  padding-left: 1rem;
+  text-align: right;
+  min-width: 150px;
 }
 
 .imagePreviewContainer {
@@ -2279,7 +2296,11 @@
 }
 
 .summaryCard {
-  background: linear-gradient(135deg, rgba(17, 25, 40, 0.95), rgba(17, 25, 40, 0.85));
+  background: linear-gradient(
+    135deg,
+    rgba(17, 25, 40, 0.95),
+    rgba(17, 25, 40, 0.85)
+  );
   backdrop-filter: blur(16px);
   border-radius: 24px;
   padding: 2rem;
@@ -2353,17 +2374,12 @@
   color: #ef4444;
 }
 
-.summaryCard:hover .summaryIcon {
-  transform: scale(1.05);
-  box-shadow: 0 12px 20px -4px rgba(99, 102, 241, 0.4);
-}
-
 .balanceWrapper {
   margin-bottom: 1rem;
 }
 
 .balanceAmount {
-  font-size: min(4vw, 2.5rem); /* Responsive font size */
+  font-size: min(4vw, 2.5rem);
   font-weight: 700;
   line-height: 1.2;
   text-align: left;
@@ -2379,6 +2395,7 @@
 .balanceText {
   background: linear-gradient(to right, #fff, #e0e7ff);
   -webkit-background-clip: text;
+  background-clip: border-box;
   -webkit-text-fill-color: transparent;
   display: flex;
   align-items: center;
@@ -2409,26 +2426,6 @@
 
 .statItem svg {
   color: #818cf8;
-}
-
-.glowEffect {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    circle at 50% 0%,
-    rgba(99, 102, 241, 0.15),
-    transparent 70%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.summaryCard:hover .glowEffect {
-  opacity: 1;
-  animation: rotateGlow 4s linear infinite;
 }
 
 @keyframes shimmer {
@@ -2495,4 +2492,164 @@
   .balanceSection {
     padding: 1rem;
   }
+}
+
+/* Wallet styles */
+.walletHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.walletHeading h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.headerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0070f3;
+  margin-right: 0.25rem;
+}
+
+.walletItem {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  transition: all var(--transition-standard);
+  background-color: #f8fafc;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.walletItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  background-color: white;
+}
+
+.deleteAccountButton {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-left: 0.4rem;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.deleteAccountButton:hover {
+  opacity: 1;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.accountIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.accountInfo {
+  flex: 1;
+}
+
+.accountInfo h4 {
+  font-size: 1rem;
+  margin: 0 0 0.25rem 0;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.accountMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.accountType {
+  font-size: 0.8rem;
+  color: #64748b;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(203, 213, 225, 0.3);
+  border-radius: 4px;
+}
+
+.accountBalance {
+  font-family: var(--font-geist-mono);
+  font-weight: 600;
+  margin-left: auto;
+  padding-left: 1rem;
+  text-align: right;
+  min-width: 150px;
+}
+
+.positiveAmount {
+  color: #10b981;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.negativeAmount {
+  color: #ef4444;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.emptyStateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.emptyState {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+
+.emptyStateSubtext {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  max-width: 280px;
+}
+
+.amountInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.currencyPrefix {
+  position: absolute;
+  left: 12px;
+  color: #64748b;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.currencyInput {
+  padding-left: 40px !important;
 }

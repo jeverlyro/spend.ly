@@ -21,7 +21,6 @@ import {
   FiCalendar,
   FiChevronLeft,
   FiChevronRight,
-  FiEdit2,
   FiTrash2,
   FiTag,
   FiInfo,
@@ -33,10 +32,8 @@ import { FaUser } from "react-icons/fa";
 import { FaHouse } from "react-icons/fa6";
 
 export default function Dashboard() {
-  // Set moment locale to Indonesian
   moment.locale("id");
 
-  // Get current month in YYYY-MM format and display format
   const currentMoment = moment();
   const initialMonth = currentMoment.format("YYYY-MM");
   const initialDisplayMonth = currentMoment.format("MMMM YYYY");
@@ -55,27 +52,24 @@ export default function Dashboard() {
     const token = localStorage.getItem("userToken");
     const name = localStorage.getItem("userName");
 
-    // Set username from localStorage
     if (name) {
       setUserName(name);
     }
 
     async function verifyAuth() {
       try {
-        // Check if we have a token first
         if (!token) {
           router.push("/login");
           return;
         }
 
-        // First check if we're already authenticated locally to prevent unnecessary API calls
         const isLoggedIn = localStorage.getItem("isLoggedIn");
         if (isLoggedIn === "true") {
+          await fetchTransactions(token);
           setIsLoading(false);
           return;
         }
 
-        // Only verify with backend if needed
         try {
           const response = await fetch(
             "http://localhost:5000/api/auth/verify",
@@ -88,11 +82,10 @@ export default function Dashboard() {
           );
 
           if (response.ok) {
-            // If verification successful, set logged in flag
             localStorage.setItem("isLoggedIn", "true");
+            await fetchTransactions(token);
             setIsLoading(false);
           } else {
-            // Clear auth data on failed verification
             localStorage.removeItem("userToken");
             localStorage.removeItem("userName");
             localStorage.removeItem("userEmail");
@@ -102,13 +95,78 @@ export default function Dashboard() {
           }
         } catch (error) {
           console.error("Backend verification error:", error);
-          // On network errors, assume token is valid to prevent logout loops
-          // This allows offline usage until proven otherwise
           localStorage.setItem("isLoggedIn", "true");
           setIsLoading(false);
         }
       } catch (error) {
         console.error("Authentication error:", error);
+      }
+    }
+
+    async function fetchTransactions(token) {
+      try {
+        const response = await fetch("http://localhost:5000/api/transactions", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.message ||
+              `Failed to fetch transactions: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+        const fetchedTransactions = data.transactions || [];
+
+        const processedTransactions = fetchedTransactions.map((transaction) => {
+          let icon;
+
+          switch (transaction.category) {
+            case "Makanan":
+              icon = <FiCoffee size={20} />;
+              break;
+            case "Pendapatan":
+              icon = <FiBriefcase size={20} />;
+              break;
+            case "Tagihan":
+              icon = <FiHouse size={20} />;
+              break;
+            case "Belanja":
+              icon = <FiShoppingBag size={20} />;
+              break;
+            case "Perjalanan":
+              icon = <FiTruck size={20} />;
+              break;
+            case "Hiburan":
+              icon = <FiDollarSign size={20} />;
+              break;
+            default:
+              icon = <FiDollarSign size={20} />;
+          }
+
+          const formattedDate = transaction.date
+            ? moment(transaction.date).format("D MMM YYYY")
+            : moment().format("D MMM YYYY");
+
+          return {
+            id: transaction._id,
+            title: transaction.title,
+            amount: transaction.amount,
+            category: transaction.category,
+            date: formattedDate,
+            icon,
+          };
+        });
+
+        setTransactions(processedTransactions);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        setTransactions([]);
       }
     }
 
@@ -148,15 +206,51 @@ export default function Dashboard() {
     return t.category.toLowerCase() === filter;
   });
 
-  const addTransaction = (transaction) => {
-    const newTransaction = {
-      id: transactions.length + 1,
-      ...transaction,
-      date: moment().format("D MMM YYYY"), // Format date using moment
-    };
+  const addTransaction = async (transaction) => {
+    try {
+      const token = localStorage.getItem("userToken");
 
-    setTransactions([newTransaction, ...transactions]);
-    setShowModal(false);
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch("http://localhost:5000/api/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: transaction.title,
+          amount: transaction.amount,
+          category: transaction.category,
+          date: moment().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const savedTransaction = data.transaction;
+
+      const newTransaction = {
+        id: savedTransaction._id,
+        title: savedTransaction.title,
+        amount: savedTransaction.amount,
+        category: savedTransaction.category,
+        date: moment(savedTransaction.date).format("D MMM YYYY"),
+        icon: transaction.icon,
+      };
+
+      setTransactions([newTransaction, ...transactions]);
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error adding transaction:", error);
+      alert(`Gagal menambahkan transaksi: ${error.message}`);
+    }
   };
 
   const handleMonthSelect = (newMonth, monthName) => {
@@ -169,8 +263,34 @@ export default function Dashboard() {
     setShowModal(true);
   };
 
-  const handleDeleteTransaction = (id) => {
-    setTransactions(transactions.filter((t) => t.id !== id));
+  const handleDeleteTransaction = async (id) => {
+    try {
+      const token = localStorage.getItem("userToken");
+
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(
+        `http://localhost:5000/api/transactions/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+
+      setTransactions(transactions.filter((t) => t.id !== id));
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+      alert(`Gagal menghapus transaksi: ${error.message}`);
+    }
   };
 
   if (isLoading) {
@@ -195,78 +315,91 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className={styles.summary}>
-          <div className={`${styles.summaryItem} ${styles.glassEffect}`}>
+        {/* Enhance the summary cards with a better layout and 3D effect */}
+        <div className={`${styles.summary} ${styles.enhancedSummary}`}>
+          <div className={`${styles.summaryCard} ${styles.glassEffect}`}>
             <div className={styles.summaryContent}>
               <div className={styles.summaryHeader}>
-                <h3>Saldo</h3>
-                <div className={`${styles.summaryIcon} ${styles.balanceIcon}`}>
-                  <FiDollarSign size={20} />
+                <div className={styles.summaryTitle}>
+                  <h3>Saldo Anda</h3>
+                  <span className={styles.summarySubtitle}>Total Keuangan</span>
+                </div>
+                <div className={`${styles.summaryIcon} ${styles.primaryIcon}`}>
+                  <FiDollarSign size={24} color="#fff" />
                 </div>
               </div>
-              <p className={`${styles.balance} ${styles.animatedValue}`}>
-                Rp{new Intl.NumberFormat('id-ID').format(balance)}
-              </p>
-              <div className={styles.summaryGlow}></div>
-            </div>
-          </div>
-          
-          <div className={`${styles.summaryItem} ${styles.glassEffect}`}>
-            <div className={styles.summaryContent}>
-              <div className={styles.summaryHeader}>
-                <h3>Pemasukan</h3>
-                <div className={`${styles.summaryIcon} ${styles.incomeIcon}`}>
-                  <FiTrendingUp size={20} />
+
+              <div className={styles.balanceSection}>
+                <div className={styles.balanceWrapper}>
+                  <p
+                    className={`${styles.balanceAmount} ${styles.animatedValue}`}
+                  >
+                    <span className={styles.currencySymbol}>Rp. </span>
+                    {Math.abs(balance).toLocaleString("id-ID")}
+                  </p>
+                </div>
+
+                <div className={styles.balanceInfo}>
+                  <div className={styles.statItem}>
+                    <FiTrendingUp size={16} />
+                    <span>Pemasukan: Rp.{income.toLocaleString("id-ID")}</span>
+                  </div>
+                  <div className={styles.statItem} style={{ marginTop: "8px" }}>
+                    <FiTrendingDown size={16} />
+                    <span>
+                      Pengeluaran: Rp.{expenses.toLocaleString("id-ID")}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <p className={`${styles.income} ${styles.animatedValue}`}>
-                Rp{new Intl.NumberFormat('id-ID').format(income)}
-              </p>
-              <div className={styles.summaryGlow}></div>
-            </div>
-          </div>
-        
-          <div className={`${styles.summaryItem} ${styles.glassEffect}`}>
-            <div className={styles.summaryContent}>
-              <div className={styles.summaryHeader}>
-                <h3>Pengeluaran</h3>
-                <div className={`${styles.summaryIcon} ${styles.expenseIcon}`}>
-                  <FiTrendingDown size={20} />
-                </div>
-              </div>
-              <p className={`${styles.expense} ${styles.animatedValue}`}>
-                Rp{new Intl.NumberFormat('id-ID').format(expenses)}
-              </p>
-              <div className={styles.summaryGlow}></div>
+
+              <div className={styles.glowEffect} />
             </div>
           </div>
         </div>
 
-        {/* Chart Section */}
-        <div className={styles.transactions} style={{ marginBottom: "1.5rem" }}>
-          <h2>Ringkasan Finansial</h2>
+        {/* Enhanced charts container */}
+        <div className={`${styles.chartContainer} ${styles.enhancedChart}`}>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionIcon}>
+              <FiTrendingUp size={18} />
+            </span>
+            Ringkasan Finansial
+          </h2>
+
           {transactions.length > 0 ? (
             <TransactionChart transactions={transactions} month={month} />
           ) : (
-            <p className={styles.emptyState}>
-              Belum ada transaksi untuk ditampilkan dalam grafik
-            </p>
+            <div className={styles.emptyStateContainer}>
+              <div className={styles.emptyStateIcon}>
+                <FiTrendingUp size={32} color="#e2e8f0" />
+              </div>
+              <p className={styles.emptyState}>
+                Belum ada transaksi untuk ditampilkan dalam grafik
+              </p>
+              <p className={styles.emptyStateSubtext}>
+                Tambahkan transaksi pertama Anda untuk melihat visualisasi
+                keuangan
+              </p>
+            </div>
           )}
         </div>
 
-        <div className={styles.actions}>
+        {/* Enhanced action buttons */}
+        <div className={`${styles.actions} ${styles.enhancedActions}`}>
           <button
-            className={styles.addButton}
+            className={`${styles.addButton} ${styles.primaryButton}`}
             onClick={() => setShowModal(true)}
           >
             <FiPlus size={18} />
             <span className={styles.addText}>Tambah Transaksi</span>
           </button>
+
           {transactions.length > 0 && (
             <>
               <div className={styles.filterSelectWrapper}>
                 <select
-                  className={styles.filterSelect}
+                  className={`${styles.filterSelect} ${styles.enhancedSelect}`}
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
                   title={filter === "all" ? "Semua Kategori" : filter}
@@ -274,14 +407,15 @@ export default function Dashboard() {
                   <option value="all">Semua Kategori</option>
                   <option value="makanan">Makanan</option>
                   <option value="pendapatan">Pendapatan</option>
-                  <option value="travel">Perjalanan</option>
+                  <option value="perjalanan">Perjalanan</option>
                   <option value="tagihan">Tagihan</option>
                   <option value="hiburan">Hiburan</option>
                   <option value="belanja">Belanja</option>
                 </select>
               </div>
+
               <button
-                className={styles.datePickerButton}
+                className={`${styles.datePickerButton} ${styles.enhancedDatePicker}`}
                 onClick={() => setShowCalendarModal(true)}
               >
                 <span>{displayMonth}</span>
@@ -291,35 +425,63 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className={styles.transactions}>
-          <h2>Transaksi Terbaru</h2>
+        {/* Enhanced transaction list */}
+        <div
+          className={`${styles.transactions} ${styles.enhancedTransactions}`}
+        >
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionIcon}>
+              <FiDollarSign size={18} />
+            </span>
+            Transaksi Terbaru
+          </h2>
 
           {filteredTransactions.length > 0 ? (
-            filteredTransactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className={styles.transaction}
-                onClick={() => setSelectedTransaction(transaction)}
-              >
-                <div className={styles.transactionIcon}>{transaction.icon}</div>
-                <div className={styles.transactionDetails}>
-                  <h4>{transaction.title}</h4>
-                  <p>
-                    {transaction.category} • {transaction.date}
+            <div className={styles.transactionList}>
+              {filteredTransactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className={`${styles.transaction} ${styles.transactionCard}`}
+                  onClick={() => setSelectedTransaction(transaction)}
+                >
+                  <div
+                    className={`${styles.transactionIcon} ${
+                      transaction.amount > 0
+                        ? styles.incomeIconBg
+                        : styles.expenseIconBg
+                    }`}
+                  >
+                    {transaction.icon}
+                  </div>
+
+                  <div className={styles.transactionDetails}>
+                    <h4>{transaction.title}</h4>
+                    <p className={styles.transactionMeta}>
+                      <span className={styles.categoryBadge}>
+                        {transaction.category}
+                      </span>
+                      <span className={styles.dateBadge}>
+                        {transaction.date}
+                      </span>
+                    </p>
+                  </div>
+
+                  <p
+                    className={`${styles.transactionAmount} ${
+                      transaction.amount > 0 ? styles.income : styles.expense
+                    }`}
+                  >
+                    {transaction.amount > 0 ? "+" : "-"}Rp
+                    {Math.abs(transaction.amount).toLocaleString("id-ID")}
                   </p>
                 </div>
-                <p
-                  className={`${styles.transactionAmount} ${
-                    transaction.amount > 0 ? styles.income : ""
-                  }`}
-                >
-                  {transaction.amount > 0 ? "+" : "-"}Rp
-                  {Math.abs(transaction.amount).toLocaleString("id-ID")}
-                </p>
-              </div>
-            ))
+              ))}
+            </div>
           ) : (
             <div className={styles.emptyStateContainer}>
+              <div className={styles.emptyStateIcon}>
+                <FiDollarSign size={32} color="#e2e8f0" />
+              </div>
               <p className={styles.emptyState}>
                 Anda belum memiliki transaksi terbaru
               </p>
@@ -331,7 +493,6 @@ export default function Dashboard() {
           )}
         </div>
       </main>
-
       <div className={styles.dockContainer}>
         <Dock
           items={items}
@@ -377,46 +538,64 @@ function TransactionModal({ onClose, onAdd }) {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Makanan");
   const [isExpense, setIsExpense] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    const finalAmount = isExpense
-      ? -Math.abs(parseFloat(amount))
-      : Math.abs(parseFloat(amount));
+    try {
+      if (!title.trim()) {
+        throw new Error("Judul transaksi tidak boleh kosong");
+      }
 
-    let icon;
-    switch (category) {
-      case "Makanan":
-        icon = <FiCoffee size={20} />;
-        break;
-      case "Pendapatan":
-        icon = <FiBriefcase size={20} />;
-        break;
-      case "Tagihan":
-        icon = <FiHouse size={20} />;
-        break;
-      case "Belanja":
-        icon = <FiShoppingBag size={20} />;
-        break;
-      case "Perjalanan":
-        icon = <FiTruck size={20} />;
-        break;
-      default:
-        icon = <FiDollarSign size={20} />;
+      const numericAmount = parseFloat(amount) || 0;
+      if (numericAmount <= 0) {
+        throw new Error("Jumlah harus lebih dari 0");
+      }
+
+      const finalAmount = isExpense
+        ? -Math.abs(numericAmount)
+        : Math.abs(numericAmount);
+
+      let icon;
+      switch (category) {
+        case "Makanan":
+          icon = <FiCoffee size={20} />;
+          break;
+        case "Pendapatan":
+          icon = <FiBriefcase size={20} />;
+          break;
+        case "Tagihan":
+          icon = <FiHouse size={20} />;
+          break;
+        case "Belanja":
+          icon = <FiShoppingBag size={20} />;
+          break;
+        case "Perjalanan":
+          icon = <FiTruck size={20} />;
+          break;
+        default:
+          icon = <FiDollarSign size={20} />;
+      }
+
+      await onAdd({
+        title,
+        amount: finalAmount,
+        category,
+        icon,
+      });
+    } catch (error) {
+      console.error("Error saving transaction:", error);
+      alert(`Gagal menyimpan transaksi: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    onAdd({
-      title,
-      amount: finalAmount,
-      category,
-      icon,
-    });
   };
 
   return (
     <div className={styles.modalOverlay}>
-      <div className={styles.modal}>
+      <div className={`${styles.modal} ${styles.enhancedModal}`}>
         <button className={styles.closeButton} onClick={onClose}>
           <FiX size={24} />
         </button>
@@ -426,7 +605,7 @@ function TransactionModal({ onClose, onAdd }) {
         <form onSubmit={handleSubmit}>
           <div className={styles.modalGroup}>
             <label>Tipe</label>
-            <div className={styles.typeToggle}>
+            <div className={`${styles.typeToggle} ${styles.enhancedToggle}`}>
               <button
                 type="button"
                 className={`${styles.typeButton} ${
@@ -434,6 +613,7 @@ function TransactionModal({ onClose, onAdd }) {
                 }`}
                 onClick={() => setIsExpense(true)}
               >
+                <FiTrendingDown size={16} style={{ marginRight: "4px" }} />
                 Pengeluaran
               </button>
               <button
@@ -443,6 +623,7 @@ function TransactionModal({ onClose, onAdd }) {
                 }`}
                 onClick={() => setIsExpense(false)}
               >
+                <FiTrendingUp size={16} style={{ marginRight: "4px" }} />
                 Pendapatan
               </button>
             </div>
@@ -457,13 +638,15 @@ function TransactionModal({ onClose, onAdd }) {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Untuk apa transaksi ini?"
               required
-              className={styles.modalInput}
+              className={`${styles.modalInput} ${styles.enhancedInput}`}
             />
           </div>
 
           <div className={styles.modalGroup}>
             <label htmlFor="amount">Jumlah</label>
-            <div className={styles.amountInput}>
+            <div
+              className={`${styles.amountInput} ${styles.enhancedAmountInput}`}
+            >
               <span className={styles.currencySymbol}>Rp</span>
               <input
                 id="amount"
@@ -475,7 +658,7 @@ function TransactionModal({ onClose, onAdd }) {
                 placeholder="0"
                 required
                 className={`${styles.modalInput} ${styles.amountInputField}`}
-                style={{ paddingLeft: "2.5rem" }}
+                style={{ paddingLeft: "2.75rem" }}
               />
             </div>
           </div>
@@ -486,7 +669,7 @@ function TransactionModal({ onClose, onAdd }) {
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className={styles.modalSelect}
+              className={`${styles.modalSelect} ${styles.enhancedSelect}`}
             >
               <option value="Makanan">Makanan</option>
               <option value="Perjalanan">Perjalanan</option>
@@ -497,9 +680,22 @@ function TransactionModal({ onClose, onAdd }) {
             </select>
           </div>
 
-          <button type="submit" className={styles.submitButton}>
-            <FiCheck size={21} />
-            Tambah Transaksi
+          <button
+            type="submit"
+            className={`${styles.submitButton} ${styles.enhancedSubmitButton}`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <div className={styles.spinnerSmall}></div>
+                <span>Menyimpan...</span>
+              </>
+            ) : (
+              <>
+                <FiCheck size={21} />
+                <span>Tambah Transaksi</span>
+              </>
+            )}
           </button>
         </form>
       </div>
@@ -511,7 +707,6 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
   const [year, month] = currentMonth.split("-").map(Number);
   const [currentYear, setCurrentYear] = useState(year);
 
-  // Use moment's month names
   const months = moment.months();
 
   const handlePrevYear = () => {
@@ -531,7 +726,9 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
 
   return (
     <div className={styles.modalOverlay}>
-      <div className={styles.calendarModal}>
+      <div
+        className={`${styles.calendarModal} ${styles.enhancedCalendarModal}`}
+      >
         <button className={styles.closeButton} onClick={onClose}>
           <FiX size={24} />
         </button>
@@ -542,13 +739,13 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
           <div className={styles.calendarTitle}>{currentYear}</div>
           <div className={styles.calendarNav}>
             <button
-              className={styles.calendarNavButton}
+              className={`${styles.calendarNavButton} ${styles.enhancedNavButton}`}
               onClick={handlePrevYear}
             >
               <FiChevronLeft size={20} />
             </button>
             <button
-              className={styles.calendarNavButton}
+              className={`${styles.calendarNavButton} ${styles.enhancedNavButton}`}
               onClick={handleNextYear}
             >
               <FiChevronRight size={20} />
@@ -556,7 +753,7 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
           </div>
         </div>
 
-        <div className={styles.monthGrid}>
+        <div className={`${styles.monthGrid} ${styles.enhancedMonthGrid}`}>
           {months.map((monthName, index) => {
             const momentDate = moment().year(currentYear).month(index);
             const monthValue = momentDate.format("YYYY-MM");
@@ -570,7 +767,8 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
                 className={`${styles.monthItem} ${
                   isSelected ? styles.monthItemSelected : ""
                 } 
-                ${isCurrentDate ? styles.monthItemCurrent : ""}`}
+                ${isCurrentDate ? styles.monthItemCurrent : ""}
+                ${styles.enhancedMonthItem}`}
                 onClick={() => handleSelectMonth(index)}
               >
                 {monthName.substring(0, 3)}
@@ -586,26 +784,32 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
 function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
   return (
     <div className={styles.modalOverlay}>
-      <div className={styles.modal}>
+      <div className={`${styles.modal} ${styles.enhancedDetailsModal}`}>
         <button className={styles.closeButton} onClick={onClose}>
           <FiX size={24} />
         </button>
 
-        <div className={styles.transactionDetailsHeader}>
+        <div
+          className={`${styles.transactionDetailsHeader} ${styles.enhancedDetailsHeader}`}
+        >
           <div
-            className={styles.transactionIconLarge}
-            style={{
-              color: transaction.amount > 0 ? "#10b981" : "#ef4444",
-              background: transaction.amount > 0 ? "#10b98115" : "#ef444415",
-            }}
+            className={`${styles.transactionIconLarge} ${
+              transaction.amount > 0
+                ? styles.incomeIconLarge
+                : styles.expenseIconLarge
+            }`}
           >
             {transaction.icon}
           </div>
           <h2>{transaction.title}</h2>
         </div>
 
-        <div className={styles.transactionDetailsContent}>
-          <div className={styles.transactionDetail}>
+        <div
+          className={`${styles.transactionDetailsContent} ${styles.enhancedDetailsContent}`}
+        >
+          <div
+            className={`${styles.transactionDetail} ${styles.enhancedDetail}`}
+          >
             <div className={styles.transactionDetailIcon}>
               <FiDollarSign size={18} />
             </div>
@@ -622,7 +826,9 @@ function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
             </div>
           </div>
 
-          <div className={styles.transactionDetail}>
+          <div
+            className={`${styles.transactionDetail} ${styles.enhancedDetail}`}
+          >
             <div className={styles.transactionDetailIcon}>
               <FiTag size={18} />
             </div>
@@ -634,7 +840,9 @@ function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
             </div>
           </div>
 
-          <div className={styles.transactionDetail}>
+          <div
+            className={`${styles.transactionDetail} ${styles.enhancedDetail}`}
+          >
             <div className={styles.transactionDetailIcon}>
               <FiCalendar size={18} />
             </div>
@@ -646,7 +854,9 @@ function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
             </div>
           </div>
 
-          <div className={styles.transactionDetail}>
+          <div
+            className={`${styles.transactionDetail} ${styles.enhancedDetail}`}
+          >
             <div className={styles.transactionDetailIcon}>
               <FiInfo size={18} />
             </div>
@@ -659,9 +869,11 @@ function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
           </div>
         </div>
 
-        <div className={styles.transactionActions}>
+        <div
+          className={`${styles.transactionActions} ${styles.enhancedActions}`}
+        >
           <button
-            className={`${styles.actionButton} ${styles.deleteButton}`}
+            className={`${styles.actionButton} ${styles.deleteButton} ${styles.enhancedActionButton}`}
             onClick={() => {
               onDelete(transaction.id);
               onClose();

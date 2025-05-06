@@ -15,6 +15,7 @@ import {
   FiChevronRight,
   FiShield,
   FiGrid,
+  FiTrash2,
 } from "react-icons/fi";
 import { IoIosWallet, IoMdTrendingUp } from "react-icons/io";
 import { FaUser, FaRegChartBar, FaBitcoin } from "react-icons/fa";
@@ -69,6 +70,8 @@ export default function WalletPage() {
         }
 
         // User is authenticated
+        const accountsData = await fetchAccounts(token);
+        setAccounts(accountsData);
         setIsLoading(false);
       } catch (error) {
         console.error("Authentication error:", error);
@@ -93,36 +96,36 @@ export default function WalletPage() {
         }
 
         const data = await response.json();
-
         const accounts = data.accounts || [];
+
         return accounts.map((account, index) => {
           let icon;
           let color;
 
           switch (account.type) {
             case "Giro":
-              icon = <FiDollarSign size={20} />;
-              color = "#0070f3";
+              icon = <BsBank2 size={20} />;
+              color = "#6366f1";
               break;
             case "Tabungan":
-              icon = <FiBarChart2 size={20} />;
+              icon = <FaPiggyBank size={20} />;
               color = "#10b981";
               break;
             case "Kredit":
-              icon = <FiCreditCard size={20} />;
-              color = "#ef4444";
+              icon = <BsCreditCard2Front size={20} />;
+              color = "#f43f5e";
               break;
             case "Investasi":
-              icon = <FiBarChart2 size={20} />;
+              icon = <IoMdTrendingUp size={20} />;
               color = "#8b5cf6";
               break;
             case "Lainnya":
               icon = <FiDollarSign size={20} />;
-              color = "#6b7280";
+              color = "#64748b";
               break;
             default:
               icon = <FiDollarSign size={20} />;
-              color = "#6b7280";
+              color = "#64748b";
           }
 
           return {
@@ -152,14 +155,85 @@ export default function WalletPage() {
     0
   );
 
-  const addAccount = (account) => {
-    const newAccount = {
-      id: accounts.length + 1,
-      ...account,
-    };
+  const addAccount = async (account) => {
+    try {
+      const token = localStorage.getItem("userToken");
 
-    setAccounts([...accounts, newAccount]);
-    setShowModal(false);
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch("http://localhost:5000/api/accounts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: account.name,
+          type: account.type,
+          balance: account.balance,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const savedAccount = data.account;
+
+      const newAccount = {
+        id: savedAccount._id,
+        name: savedAccount.name,
+        type: savedAccount.type,
+        balance: savedAccount.balance,
+        icon: account.icon,
+        color: account.color,
+      };
+
+      setAccounts([...accounts, newAccount]);
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error adding account:", error);
+      alert(`Gagal menambahkan dompet: ${error.message}`);
+    }
+  };
+
+  const deleteAccount = async (accountId) => {
+    if (!confirm("Anda yakin ingin menghapus dompet ini?")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("userToken");
+
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(
+        `http://localhost:5000/api/accounts/${accountId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+
+      // Update state to remove the deleted account
+      setAccounts(accounts.filter((account) => account.id !== accountId));
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert(`Gagal menghapus dompet: ${error.message}`);
+    }
   };
 
   if (isLoading) {
@@ -190,10 +264,10 @@ export default function WalletPage() {
               <div className={styles.summaryHeader}>
                 <div className={styles.summaryTitle}>
                   <h3>Total Saldo</h3>
-                  <span className={styles.summarySubtitle}>Semua Rekening</span>
+                  <span className={styles.summarySubtitle}>Semua Dompet</span>
                 </div>
                 <div className={`${styles.summaryIcon} ${styles.primaryIcon}`}>
-                  <IoIosWallet size={24} />
+                  <IoIosWallet size={24} color="#fff" />
                 </div>
               </div>
 
@@ -202,7 +276,7 @@ export default function WalletPage() {
                   <p
                     className={`${styles.balanceAmount} ${styles.animatedValue}`}
                   >
-                    <span className={styles.currencySymbol}></span>
+                    <span className={styles.currencySymbol}>Rp. </span>
                     {Math.abs(totalBalance).toLocaleString("id-ID")}
                   </p>
                 </div>
@@ -210,7 +284,7 @@ export default function WalletPage() {
                 <div className={styles.balanceInfo}>
                   <div className={styles.statItem}>
                     <FaRegChartBar size={16} />
-                    <span>{accounts.length} Rekening Aktif</span>
+                    <span>{accounts.length} Dompet Aktif</span>
                   </div>
                 </div>
               </div>
@@ -225,7 +299,7 @@ export default function WalletPage() {
             <AccountsChart accounts={accounts} />
           ) : (
             <p className={styles.emptyState}>
-              Belum ada rekening untuk ditampilkan dalam grafik
+              Belum ada dompet untuk ditampilkan dalam grafik
             </p>
           )}
         </div>
@@ -237,18 +311,26 @@ export default function WalletPage() {
             style={{ gridColumn: "1 / -1" }}
           >
             <FiPlus size={18} />
-            <span className={styles.addText}>Tambah Rekening</span>
+            <span className={styles.addText}>Tambah Dompet</span>
           </button>
         </div>
 
         <div className={styles.transactions}>
-          <h2>Rekening Anda</h2>
+          <div className={styles.walletHeading}>
+            <h2>
+              <span className={styles.headerIcon}>
+                <IoIosWallet size={18} />
+              </span>
+              Dompet Anda
+            </h2>
+          </div>
 
           {accounts.length > 0 ? (
-            accounts.map((account) => (
+            accounts.map((account, index) => (
               <div
                 key={account.id}
-                className={`${styles.transaction} ${styles.modernCard}`}
+                className={`${styles.transaction} ${styles.modernCard} ${styles.walletItem}`}
+                style={{ animationDelay: `${(index + 1) * 0.1}s` }}
               >
                 <div
                   className={styles.accountIcon}
@@ -273,18 +355,37 @@ export default function WalletPage() {
                         : styles.negativeAmount
                     }
                   >
-                    {account.balance >= 0 ? "+" : "-"}Rp
+                    {account.balance >= 0 ? "+" : "-"}
+                    <span
+                      className={
+                        account.balance >= 0
+                          ? styles.currencySymbolPositive
+                          : styles.currencySymbolNegative
+                      }
+                    >
+                      Rp.{" "}
+                    </span>
                     {Math.abs(account.balance).toLocaleString("id-ID")}
                   </p>
                 </div>
+                <button
+                  className={styles.deleteAccountButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteAccount(account.id);
+                  }}
+                  aria-label="Hapus dompet"
+                >
+                  <FiTrash2 size={16} />
+                </button>
               </div>
             ))
           ) : (
             <div className={styles.emptyStateContainer}>
-              <p className={styles.emptyState}>Anda belum memiliki rekening</p>
+              <p className={styles.emptyState}>Anda belum memiliki dompet</p>
               <p className={styles.emptyStateSubtext}>
-                Tambahkan rekening pertama Anda dengan menekan tombol
-                &quot;Tambah Rekening&quot;
+                Tambahkan dompet pertama Anda dengan menekan tombol &quot;Tambah
+                Dompet&quot;
               </p>
             </div>
           )}
@@ -304,7 +405,7 @@ export default function WalletPage() {
         <AccountModal
           onClose={() => setShowModal(false)}
           onAdd={addAccount}
-          accounts={accounts} // Tambahkan prop ini
+          accounts={accounts}
         />
       )}
 
@@ -321,41 +422,40 @@ function AccountModal({ onClose, onAdd, accounts }) {
   const [balance, setBalance] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const addAccountToBackend = async (accountData, token) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/accounts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(accountData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Error: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error in addAccountToBackend:", error);
-      throw error;
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    const { icon, color } = getAccountTypeInfo(type);
+    try {
+      if (!name.trim()) {
+        throw new Error("Nama dompet tidak boleh kosong");
+      }
 
-    onAdd({
-      name,
-      type,
-      balance: parseFloat(balance),
-      icon,
-      color,
-    });
+      const numericBalance = parseFloat(balance) || 0;
+
+      const nameExists = accounts.some(
+        (account) => account.name.toLowerCase() === name.toLowerCase()
+      );
+
+      if (nameExists) {
+        throw new Error("Dompet dengan nama ini sudah ada");
+      }
+
+      const { icon, color } = getAccountTypeInfo(type);
+
+      onAdd({
+        name,
+        type,
+        balance: numericBalance,
+        icon,
+        color,
+      });
+    } catch (error) {
+      console.error("Error saving account:", error);
+      alert(`Gagal menyimpan dompet: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -400,7 +500,7 @@ function AccountModal({ onClose, onAdd, accounts }) {
           <div className={styles.modalGroup}>
             <label htmlFor="balance">Saldo Saat Ini</label>
             <div className={styles.amountInput}>
-              <span></span>
+              <span className={styles.currencyPrefix}>Rp.</span>
               <input
                 id="balance"
                 type="number"
@@ -409,14 +509,13 @@ function AccountModal({ onClose, onAdd, accounts }) {
                 value={balance}
                 onChange={(e) => {
                   const value = e.target.value;
-                  // Hanya izinkan angka non-negatif
                   if (value === "" || parseFloat(value) >= 0) {
                     setBalance(value);
                   }
                 }}
                 placeholder="0"
                 required
-                className={styles.modalInput}
+                className={`${styles.modalInput} ${styles.currencyInput}`}
               />
             </div>
           </div>
@@ -433,33 +532,3 @@ function AccountModal({ onClose, onAdd, accounts }) {
     </div>
   );
 }
-
-const getAccountTypeInfo = (type) => {
-  switch (type) {
-    case "Giro":
-      return {
-        icon: <BsBank2 size={20} />,
-        color: "#6366f1", // Indigo
-      };
-    case "Tabungan":
-      return {
-        icon: <FaPiggyBank size={20} />,
-        color: "#10b981", // Emerald
-      };
-    case "Kredit":
-      return {
-        icon: <BsCreditCard2Front size={20} />,
-        color: "#f43f5e", // Rose
-      };
-    case "Investasi":
-      return {
-        icon: <IoMdTrendingUp size={20} />,
-        color: "#8b5cf6", // Violet
-      };
-    default:
-      return {
-        icon: <FiGrid size={20} />,
-        color: "#64748b", // Slate
-      };
-  }
-};
