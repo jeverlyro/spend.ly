@@ -5,7 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import styles from "./register.module.css";
-import { FiMail, FiLock, FiUser, FiArrowLeft } from "react-icons/fi";
+import {
+  FiMail,
+  FiLock,
+  FiUser,
+  FiArrowLeft,
+  FiEye,
+  FiEyeOff,
+} from "react-icons/fi";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -13,6 +20,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -20,7 +28,6 @@ export default function Register() {
     setIsLoading(true);
     setErrorMsg("");
 
-    // Validate password
     if (password.length < 8) {
       setErrorMsg("Kata sandi harus minimal 8 karakter");
       setIsLoading(false);
@@ -52,6 +59,10 @@ export default function Register() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -111,13 +122,25 @@ export default function Register() {
               <FiLock className={styles.inputIcon} size={18} />
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Buat kata sandi"
                 className={styles.input}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={togglePasswordVisibility}
+                aria-label={
+                  showPassword
+                    ? "Sembunyikan kata sandi"
+                    : "Tampilkan kata sandi"
+                }
+              >
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
             </div>
             <p className={styles.passwordHint}>Harus minimal 8 karakter</p>
           </div>

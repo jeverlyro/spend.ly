@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./login.module.css";
-import { FiMail, FiLock, FiArrowLeft } from "react-icons/fi";
+import { FiMail, FiLock, FiArrowLeft, FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -13,25 +13,22 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Check for registration success
     if (searchParams.get("registered") === "true") {
       setSuccessMsg(
         "Registrasi berhasil! Silakan periksa email Anda untuk verifikasi."
       );
     }
 
-    // Check for verification success
     if (searchParams.get("verified") === "true") {
       setSuccessMsg(
         "Email berhasil diverifikasi! Silakan masuk dengan akun Anda."
       );
     }
-
-    // Check for password reset success
     if (searchParams.get("reset") === "success") {
       setSuccessMsg(
         "Kata sandi berhasil direset! Silakan masuk dengan kata sandi baru Anda."
@@ -116,6 +113,10 @@ export default function Login() {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.formCard}>
@@ -161,13 +162,25 @@ export default function Login() {
               <FiLock className={styles.inputIcon} size={18} />
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Masukkan kata sandi Anda"
                 className={styles.input}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={togglePasswordVisibility}
+                aria-label={
+                  showPassword
+                    ? "Sembunyikan kata sandi"
+                    : "Tampilkan kata sandi"
+                }
+              >
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
             </div>
           </div>
 
