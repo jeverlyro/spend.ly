@@ -200,7 +200,7 @@ export default function Dashboard() {
             <div className={styles.summaryContent}>
               <div className={styles.summaryHeader}>
                 <h3>Saldo</h3>
-                <div className={styles.summaryIcon}>
+                <div className={`${styles.summaryIcon} ${styles.balanceIcon}`}>
                   <FiDollarSign size={20} />
                 </div>
               </div>
