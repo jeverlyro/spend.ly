@@ -91,36 +91,49 @@ export default function WalletPage() {
         }
 
         const data = await response.json();
-
         const accounts = data.accounts || [];
+
+        // Fungsi untuk menghasilkan warna berdasarkan nama wallet
+        const generateColorFromName = (name) => {
+          let hash = 0;
+          for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+          }
+
+          let r = (hash & 0xff0000) >> 16;
+          let g = (hash & 0x00ff00) >> 8;
+          let b = hash & 0x0000ff;
+
+          r = Math.min(Math.max(r, 50), 200);
+          g = Math.min(Math.max(g, 50), 200);
+          b = Math.min(Math.max(b, 50), 200);
+
+          return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
+        };
+
         return accounts.map((account, index) => {
           let icon;
-          let color;
+          // Gunakan warna berdasarkan nama
+          const color = generateColorFromName(account.name);
 
           switch (account.type) {
             case "Giro":
               icon = <FiDollarSign size={20} />;
-              color = "#0070f3";
               break;
             case "Tabungan":
               icon = <FiBarChart2 size={20} />;
-              color = "#10b981";
               break;
             case "Kredit":
               icon = <FiCreditCard size={20} />;
-              color = "#ef4444";
               break;
             case "Investasi":
               icon = <FiBarChart2 size={20} />;
-              color = "#8b5cf6";
               break;
             case "Lainnya":
               icon = <FiDollarSign size={20} />;
-              color = "#6b7280";
               break;
             default:
               icon = <FiDollarSign size={20} />;
-              color = "#6b7280";
           }
 
           return {
@@ -129,7 +142,7 @@ export default function WalletPage() {
             type: account.type,
             balance: account.balance,
             icon,
-            color,
+            color, // Gunakan warna berdasarkan nama
           };
         });
       } catch (error) {
@@ -306,6 +319,27 @@ function AccountModal({ onClose, onAdd, accounts }) {
     }
   };
 
+  // Fungsi untuk menghasilkan warna berdasarkan nama wallet
+  const generateColorFromName = (name) => {
+    // Menggunakan hash sederhana untuk menghasilkan warna berdasarkan nama wallet
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    // Konversi ke warna RGB
+    let r = (hash & 0xff0000) >> 16;
+    let g = (hash & 0x00ff00) >> 8;
+    let b = hash & 0x0000ff;
+
+    // Pastikan warna cukup cerah dan tidak terlalu terang
+    r = Math.min(Math.max(r, 50), 200);
+    g = Math.min(Math.max(g, 50), 200);
+    b = Math.min(Math.max(b, 50), 200);
+
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -344,11 +378,14 @@ function AccountModal({ onClose, onAdd, accounts }) {
 
       const savedAccount = await addAccountToBackend(accountData, token);
 
+      // Generate warna berdasarkan nama wallet
+      const walletColor = generateColorFromName(name);
+
       // Now create a processed account with icon and color
       const accountWithIcon = {
         ...savedAccount.account, // Adjust based on your API response structure
         icon: getAccountIcon(type),
-        color: getAccountColor(type),
+        color: walletColor, // Gunakan warna yang dihasilkan dari nama
       };
 
       onAdd(accountWithIcon);
@@ -361,7 +398,7 @@ function AccountModal({ onClose, onAdd, accounts }) {
     }
   };
 
-  // Helper functions untuk icon dan warna
+  // Helper functions untuk icon
   const getAccountIcon = (type) => {
     switch (type) {
       case "Giro":
@@ -375,18 +412,7 @@ function AccountModal({ onClose, onAdd, accounts }) {
     }
   };
 
-  const getAccountColor = (type) => {
-    switch (type) {
-      case "Giro":
-        return "#0070f3";
-      case "Tabungan":
-        return "#10b981";
-      case "Kredit":
-        return "#ef4444";
-      default:
-        return "#6b7280";
-    }
-  };
+  // Menghapus fungsi getAccountColor karena sekarang kita menggunakan warna berdasarkan nama
 
   return (
     <div className={styles.modalOverlay}>
