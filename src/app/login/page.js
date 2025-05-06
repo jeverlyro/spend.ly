@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -17,6 +17,31 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const verifyToken = useCallback(
+    async (token) => {
+      try {
+        const response = await fetch(getApiEndpoint("/api/auth/verify"), {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          router.push("/dashboard");
+        } else {
+          localStorage.removeItem("userToken");
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("userPhoto");
+        }
+      } catch (error) {
+        console.error("Token verification error:", error);
+      }
+    },
+    [router]
+  );
 
   useEffect(() => {
     if (searchParams.get("registered") === "true") {
@@ -41,29 +66,7 @@ export default function Login() {
     if (token) {
       verifyToken(token);
     }
-  }, [router, searchParams]);
-
-  const verifyToken = async (token) => {
-    try {
-      const response = await fetch(getApiEndpoint("/api/auth/verify"), {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        router.push("/dashboard");
-      } else {
-        localStorage.removeItem("userToken");
-        localStorage.removeItem("userName");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("userPhoto");
-      }
-    } catch (error) {
-      console.error("Token verification error:", error);
-    }
-  };
+  }, [router, searchParams, verifyToken]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
