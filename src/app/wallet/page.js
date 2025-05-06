@@ -13,10 +13,13 @@ import {
   FiX,
   FiCheck,
   FiChevronRight,
+  FiShield,
+  FiGrid,
 } from "react-icons/fi";
-import { IoIosWallet } from "react-icons/io";
-import { FaUser } from "react-icons/fa";
-import { FaHouse } from "react-icons/fa6";
+import { IoIosWallet, IoMdTrendingUp } from "react-icons/io";
+import { FaUser, FaRegChartBar, FaBitcoin } from "react-icons/fa";
+import { FaHouse, FaPiggyBank } from "react-icons/fa6";
+import { BsCreditCard2Front, BsBank2 } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
 const items = [
@@ -120,11 +123,35 @@ export default function WalletPage() {
         </div>
 
         <div className={styles.summary}>
-          <div className={styles.summaryItem} style={{ gridColumn: "1 / -1" }}>
-            <h3>Total Saldo</h3>
-            <p className={totalBalance >= 0 ? styles.balance : styles.expense}>
-              Rp{Math.abs(totalBalance).toLocaleString("id-ID")}
-            </p>
+          <div className={`${styles.summaryCard} ${styles.glassEffect}`}>
+            <div className={styles.summaryContent}>
+              <div className={styles.summaryHeader}>
+                <div className={styles.summaryTitle}>
+                  <h3>Total Saldo</h3>
+                  <span className={styles.summarySubtitle}>Semua Rekening</span>
+                </div>
+                <div className={`${styles.summaryIcon} ${styles.primaryIcon}`}>
+                  <IoIosWallet size={24} />
+                </div>
+              </div>
+              <div className={styles.balanceWrapper}>
+                <p className={`${styles.balanceAmount} ${styles.animatedValue}`}>
+                  <span className={styles.currencySymbol}>Rp</span>
+                  {Math.abs(totalBalance).toLocaleString("id-ID")}
+                </p>
+                <div className={styles.balanceTrend}>
+                  <IoMdTrendingUp size={20} />
+                  <span>+2.5%</span>
+                </div>
+              </div>
+              <div className={styles.summaryStats}>
+                <div className={styles.statItem}>
+                  <FaRegChartBar size={16} />
+                  <span>{accounts.length} Rekening Aktif</span>
+                </div>
+              </div>
+              <div className={styles.glowEffect} />
+            </div>
           </div>
         </div>
 
@@ -155,28 +182,28 @@ export default function WalletPage() {
 
           {accounts.length > 0 ? (
             accounts.map((account) => (
-              <div key={account.id} className={styles.transaction}>
+              <div key={account.id} className={`${styles.transaction} ${styles.modernCard}`}>
                 <div
-                  className={styles.transactionIcon}
+                  className={styles.accountIcon}
                   style={{
-                    color: account.color,
-                    background: `${account.color}15`,
+                    background: `linear-gradient(135deg, ${account.color}, ${account.color}dd)`,
                   }}
                 >
                   {account.icon}
                 </div>
-                <div className={styles.transactionDetails}>
+                <div className={styles.accountInfo}>
                   <h4>{account.name}</h4>
-                  <p>{account.type}</p>
+                  <div className={styles.accountMeta}>
+                    <span className={styles.accountType}>{account.type}</span>
+                    <FiChevronRight size={16} />
+                  </div>
                 </div>
-                <p
-                  className={`${styles.transactionAmount} ${
-                    account.balance >= 0 ? styles.income : ""
-                  }`}
-                >
-                  {account.balance >= 0 ? "+" : "-"}Rp
-                  {Math.abs(account.balance).toLocaleString("id-ID")}
-                </p>
+                <div className={styles.accountBalance}>
+                  <p className={account.balance >= 0 ? styles.positiveAmount : styles.negativeAmount}>
+                    {account.balance >= 0 ? "+" : "-"}Rp
+                    {Math.abs(account.balance).toLocaleString("id-ID")}
+                  </p>
+                </div>
               </div>
             ))
           ) : (
@@ -219,25 +246,7 @@ function AccountModal({ onClose, onAdd }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    let icon;
-    let color = "#0070f3";
-
-    switch (type) {
-      case "Giro":
-        icon = <FiDollarSign size={20} />;
-        color = "#0070f3";
-        break;
-      case "Tabungan":
-        icon = <FiBarChart2 size={20} />;
-        color = "#10b981";
-        break;
-      case "Kredit":
-        icon = <FiCreditCard size={20} />;
-        color = "#ef4444";
-        break;
-      default:
-        icon = <FiDollarSign size={20} />;
-    }
+    const { icon, color } = getAccountTypeInfo(type);
 
     onAdd({
       name,
@@ -313,3 +322,33 @@ function AccountModal({ onClose, onAdd }) {
     </div>
   );
 }
+
+const getAccountTypeInfo = (type) => {
+  switch (type) {
+    case "Giro":
+      return {
+        icon: <BsBank2 size={20} />,
+        color: "#6366f1" // Indigo
+      };
+    case "Tabungan":
+      return {
+        icon: <FaPiggyBank size={20} />,
+        color: "#10b981" // Emerald
+      };
+    case "Kredit":
+      return {
+        icon: <BsCreditCard2Front size={20} />,
+        color: "#f43f5e" // Rose
+      };
+    case "Investasi":
+      return {
+        icon: <IoMdTrendingUp size={20} />,
+        color: "#8b5cf6" // Violet
+      };
+    default:
+      return {
+        icon: <FiGrid size={20} />,
+        color: "#64748b" // Slate
+      };
+  }
+};
