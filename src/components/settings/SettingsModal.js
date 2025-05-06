@@ -1,11 +1,10 @@
 "use client";
 
-import { FiX, FiArrowLeft, FiSend } from "react-icons/fi";
+import { FiX, FiArrowLeft, FiSend, FiTrash2 } from "react-icons/fi";
 import styles from "@/app/page.module.css";
 import { useToast } from "@/components/toast/toastProvider";
-import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function SettingsModal({ onClose, setting: initialSetting }) {
   const { addToast } = useToast();
@@ -18,6 +17,10 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
     message: "",
     category: "general",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleBackClick = () => {
     if (previousSetting) {
@@ -41,24 +44,106 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
     }));
   };
 
-  const handleSupportSubmit = (e) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        addToast("Ukuran file terlalu besar. Maksimum 5MB.", "error", 5000);
+        e.target.value = "";
+        return;
+      }
+
+      // Store the file
+      setSelectedFile(file);
+
+      // Create a preview URL
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result);
+      };
+      fileReader.readAsDataURL(file);
+    } else {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSupportSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    console.log("Support ticket submitted:", supportForm);
+    try {
+      const formData = new FormData();
+      formData.append("subject", supportForm.subject);
+      formData.append("message", supportForm.message);
+      formData.append("category", supportForm.category);
 
-    addToast(
-      "Tiket dukungan dibuat! Kami akan segera menghubungi Anda.",
-      "success",
-      3000
-    );
+      const userName = localStorage.getItem("userName");
+      const userEmail = localStorage.getItem("userEmail");
 
-    setSupportForm({
-      subject: "",
-      message: "",
-      category: "general",
-    });
+      if (userName) formData.append("name", userName);
+      if (userEmail) formData.append("email", userEmail);
 
-    setShowSupportForm(false);
+      if (selectedFile) {
+        formData.append("attachment", selectedFile);
+      }
+
+      // Start sending the form data in the background
+      fetch(`http://localhost:5000/api/support/submit`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      }).catch((error) => {
+        console.log(
+          "Network error occurred, but ticket might still be processed:",
+          error
+        );
+      });
+
+      // Add a deliberate delay to simulate processing time (2.5 seconds)
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+
+      // Show success message after the delay
+      addToast(
+        "Tiket dukungan dikirim! Kami akan segera menghubungi Anda.",
+        "success",
+        3000
+      );
+
+      // Reset the form
+      setSupportForm({
+        subject: "",
+        message: "",
+        category: "general",
+      });
+
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      setShowSupportForm(false);
+    } catch (error) {
+      console.error("Error preparing support ticket:", error);
+      addToast(
+        `Terjadi kesalahan saat menyiapkan tiket dukungan. Silakan coba lagi.`,
+        "error",
+        5000
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderContent = () => {
@@ -71,8 +156,8 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
               {!showSupportForm ? (
                 <>
                   <h3>Hubungi Kami</h3>
-                  <p>Email: support@spend.ly</p>
-                  <p>Telepon: +1 (555) 123-4567</p>
+                  <p>Email: spendlymail@gmail.com</p>
+                  <p>Telepon: +62 858-2345-9380</p>
 
                   <h3>FAQ</h3>
                   <div className={styles.faqItem}>
@@ -85,15 +170,15 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                   <div className={styles.faqItem}>
                     <h4>Bisakah saya mengekspor data pengeluaran saya?</h4>
                     <p>
-                      Ya! Buka Dompet, tekan ikon menu dan pilih &quot;Ekspor
+                      Ya! Buka Dashboard, tekan ikon menu dan pilih &quot;Ekspor
                       Data&quot;.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
-                    <h4>Bagaimana cara mengubah kata sandi saya?</h4>
+                    <h4>Bagaimana cara mengubah profil saya?</h4>
                     <p>
-                      Di halaman Profil, tekan &quot;Edit Profil&quot; dan pilih
-                      opsi &quot;Ubah Kata Sandi&quot;.
+                      Di halaman Profil, tekan &quot;Edit Profil&quot; dan ubah
+                      nama lalu tekan save changes.
                     </p>
                   </div>
 
@@ -101,7 +186,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                     className={styles.supportButton}
                     onClick={() => setShowSupportForm(true)}
                   >
-                    Buat Tiket Dukungan
+                    Buat Support Ticket
                   </button>
                 </>
               ) : (
@@ -113,7 +198,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                     <FiArrowLeft size={16} /> Kembali ke Bantuan
                   </button>
 
-                  <h3>Kirim Tiket Dukungan</h3>
+                  <h3>Kirim Support Ticket</h3>
                   <p className={styles.supportFormIntro}>
                     Mohon isi formulir di bawah ini dan tim dukungan kami akan
                     segera menghubungi Anda.
@@ -170,19 +255,54 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
                     </div>
 
                     <div className={styles.formAttachment}>
-                      <label className={styles.attachmentLabel}>
-                        <input type="file" className={styles.fileInput} />
-                        <span>+ Tambahkan Tangkapan Layar (opsional)</span>
-                      </label>
+                      {previewUrl ? (
+                        <div className={styles.imagePreviewContainer}>
+                          <div className={styles.imagePreviewWrapper}>
+                            <Image
+                              src={previewUrl}
+                              alt="Preview"
+                              className={styles.imagePreview}
+                              width={300}
+                              height={200}
+                              layout="responsive"
+                              objectFit="contain"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleRemoveFile}
+                              className={styles.removeImageBtn}
+                              title="Hapus gambar"
+                            >
+                              <FiTrash2 size={18} />
+                            </button>
+                          </div>
+                          <p className={styles.fileInfo}>
+                            {selectedFile?.name} (
+                            {Math.round(selectedFile?.size / 1024)} KB)
+                          </p>
+                        </div>
+                      ) : (
+                        <label className={styles.attachmentLabel}>
+                          <input
+                            type="file"
+                            className={styles.fileInput}
+                            onChange={handleFileChange}
+                            ref={fileInputRef}
+                            accept="image/*"
+                          />
+                          <span>+ Tambahkan Screenshot (opsional)</span>
+                        </label>
+                      )}
                       <p className={styles.fileHint}>Ukuran file maks: 5MB</p>
                     </div>
 
                     <button
                       type="submit"
                       className={styles.submitSupportButton}
+                      disabled={isSubmitting}
                     >
                       <FiSend size={18} />
-                      Kirim Tiket
+                      {isSubmitting ? "Mengirim..." : "Kirim Ticket"}
                     </button>
                   </form>
                 </div>
@@ -212,21 +332,22 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
               <p className={styles.appVersion}>Versi 1.0.0</p>
               <p className={styles.appDescription}>
                 Spend.ly membantu Anda melacak pengeluaran dan pendapatan harian
-                dengan antarmuka yang sederhana dan elegan. Tetapkan anggaran,
-                kategorikan transaksi, dan dapatkan wawasan tentang kebiasaan
-                belanja Anda untuk membuat keputusan keuangan yang lebih baik.
+                dengan desain interface yang sederhana dan elegan. Tetapkan
+                anggaran, kategorikan transaksi, dan dapatkan wawasan tentang
+                kebiasaan belanja Anda untuk membuat keputusan keuangan yang
+                lebih baik.
               </p>
 
               <h3>Tim Pengembang</h3>
               <ul className={styles.teamList}>
-                <li>I Kadek Tresna Jeverly - Pengembang Utama</li>
-                <li>Arturito Imanuel Rawung - Desainer UI/UX</li>
-                <li>Revando Aruperes - Insinyur Backend</li>
-                <li>Ricky Mambu - Pengembang Mobile</li>
+                <li>I Kadek Tresna Jeverly - Full-stack</li>
+                <li>Arturito Imanuel Rawung - Backend</li>
+                <li>Revando Aruperes - Fullstack</li>
+                <li>Ricky Mambu - PR</li>
               </ul>
 
               <div className={styles.legalInfo}>
-                <p>&copy; 2023 Spend.ly - Hak cipta dilindungi</p>
+                <p>&copy; 2025 Spend.ly - All rights reserved.</p>
                 <div className={styles.legalLinks}>
                   <button
                     onClick={() => navigateTo("terms")}
@@ -257,7 +378,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
             </div>
             <div className={`${styles.settingsContent} ${styles.legalContent}`}>
               <p className={styles.lastUpdated}>
-                Terakhir Diperbarui: 1 November 2023
+                Terakhir Diperbarui: 25 April 2025
               </p>
 
               <h3>1. Penerimaan Ketentuan</h3>
@@ -324,14 +445,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
               </p>
 
               <h3>6. Tautan</h3>
-              <p>
-                Spend.ly belum meninjau semua situs yang ditautkan ke situs
-                webnya dan tidak bertanggung jawab atas isi situs tertaut
-                tersebut. Pencantuman tautan apa pun tidak menyiratkan dukungan
-                oleh Spend.ly terhadap situs tersebut. Penggunaan situs web
-                tertaut tersebut adalah risiko pengguna sendiri.
-              </p>
-
+              <p></p>
               <h3>7. Modifikasi</h3>
               <p>
                 Spend.ly dapat merevisi syarat layanan ini kapan saja tanpa
@@ -361,7 +475,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
             </div>
             <div className={`${styles.settingsContent} ${styles.legalContent}`}>
               <p className={styles.lastUpdated}>
-                Terakhir Diperbarui: 1 November 2023
+                Terakhir Diperbarui: 25 April 2025
               </p>
 
               <h3>1. Pendahuluan</h3>

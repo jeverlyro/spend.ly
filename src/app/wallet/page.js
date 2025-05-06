@@ -43,6 +43,7 @@ export default function WalletPage() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
+  // Check authentication with backend
   useEffect(() => {
     const token = localStorage.getItem("userToken");
 
@@ -56,6 +57,7 @@ export default function WalletPage() {
         });
 
         if (!response.ok) {
+          // Token invalid, clear localStorage and redirect
           localStorage.removeItem("userToken");
           localStorage.removeItem("userName");
           localStorage.removeItem("userEmail");
@@ -65,6 +67,7 @@ export default function WalletPage() {
           return;
         }
 
+        // User is authenticated
         setIsLoading(false);
       } catch (error) {
         console.error("Authentication error:", error);
@@ -125,6 +128,7 @@ export default function WalletPage() {
           </div>
         </div>
 
+        {/* Chart Section */}
         <div className={styles.chartContainer}>
           {accounts.length > 0 ? (
             <AccountsChart accounts={accounts} />
@@ -179,8 +183,8 @@ export default function WalletPage() {
             <div className={styles.emptyStateContainer}>
               <p className={styles.emptyState}>Anda belum memiliki rekening</p>
               <p className={styles.emptyStateSubtext}>
-                Tambahkan rekening pertama Anda dengan menekan tombol "Tambah
-                Rekening"
+                Tambahkan rekening pertama Anda dengan menekan tombol
+                &quot;Tambah Rekening&quot;
               </p>
             </div>
           )}

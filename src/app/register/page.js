@@ -15,33 +15,44 @@ export default function Register() {
   const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMsg("");
 
-    // Simulate registration process
-    setTimeout(() => {
-      // In a real app you would register the user via your backend
-      if (name && email && password) {
-        if (password.length < 8) {
-          setErrorMsg("Kata sandi harus minimal 8 karakter");
-          setIsLoading(false);
-          return;
-        }
-
-        // Store auth state in localStorage (in a real app, use secure auth tokens)
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userName", name);
-        localStorage.setItem("userEmail", email);
-
-        // Redirect to dashboard
-        router.push("/dashboard");
-      } else {
-        setErrorMsg("Silakan lengkapi semua kolom");
-      }
+    // Validate password
+    if (password.length < 8) {
+      setErrorMsg("Kata sandi harus minimal 8 karakter");
       setIsLoading(false);
-    }, 1000);
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("userToken", data.token);
+        localStorage.setItem("userName", data.user.name);
+        localStorage.setItem("userEmail", data.user.email);
+
+        router.push("/login");
+      } else {
+        setErrorMsg(data.message || "Registrasi gagal. Silakan coba lagi.");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setErrorMsg("Terjadi kesalahan. Silakan coba lagi nanti.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

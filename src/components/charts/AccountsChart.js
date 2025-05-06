@@ -4,9 +4,11 @@ import { useRef, useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 
+// Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AccountsChart({ accounts }) {
+  // Filter out accounts with negative balance for the pie chart
   const positiveAccounts = accounts.filter((account) => account.balance > 0);
   const totalBalance = positiveAccounts.reduce(
     (sum, account) => sum + account.balance,
@@ -20,7 +22,7 @@ export default function AccountsChart({ accounts }) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "bottom",
+        position: "bottom", // Changed from "right" to "bottom" for better fit on mobile
         align: "center",
         labels: {
           usePointStyle: true,
@@ -62,7 +64,14 @@ export default function AccountsChart({ accounts }) {
           label: (context) => {
             const value = context.raw || 0;
             const percentage = ((value / totalBalance) * 100).toFixed(1);
-            return [`$${value.toFixed(2)}`, `${percentage}% dari total`];
+            // Format as Indonesian Rupiah
+            const formattedValue = new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(value);
+            return [`${formattedValue}`, `${percentage}% dari total`];
           },
         },
       },
@@ -98,6 +107,7 @@ export default function AccountsChart({ accounts }) {
       {
         data: positiveAccounts.map((account) => account.balance),
         backgroundColor: positiveAccounts.map((account) => {
+          // Make colors slightly transparent
           const color = account.color;
           return color.replace(")", ", 0.85)").replace("rgb", "rgba");
         }),
@@ -115,8 +125,8 @@ export default function AccountsChart({ accounts }) {
         position: "relative",
         width: "100%",
         maxWidth: "550px",
-        height: "300px",
-        margin: "0 auto 1.5rem auto",
+        height: "300px", // Reduced height
+        margin: "0 auto 1.5rem auto", // Centered with auto margins
         padding: "10px",
         borderRadius: "10px",
         background:
@@ -142,7 +152,7 @@ export default function AccountsChart({ accounts }) {
           <div
             style={{
               position: "absolute",
-              top: "40%",
+              top: "40%", // Moved up to accommodate legend at bottom
               left: "50%",
               transform: "translate(-50%, -50%)",
               textAlign: "center",
@@ -165,7 +175,12 @@ export default function AccountsChart({ accounts }) {
                 color: "#0f172a",
               }}
             >
-              ${totalBalance.toFixed(2)}
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }).format(totalBalance)}
             </div>
           </div>
         )}

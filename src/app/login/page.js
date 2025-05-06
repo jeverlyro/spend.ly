@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./login.module.css";
 import { FiMail, FiLock, FiArrowLeft } from "react-icons/fi";
 
@@ -15,35 +15,88 @@ export default function Login() {
   const router = useRouter();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (isLoggedIn === "true") {
-      router.push("/dashboard");
+    // Check if user is already logged in
+    const token = localStorage.getItem("userToken");
+
+    if (token) {
+      // Verify token validity with backend
+      verifyToken(token);
     }
   }, [router]);
 
-  const handleSubmit = (e) => {
+  // Function to verify token with backend
+  const verifyToken = async (token) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/verify", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        router.push("/dashboard");
+      } else {
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userPhoto");
+      }
+    } catch (error) {
+      console.error("Token verification error:", error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMsg("");
 
-    setTimeout(() => {
-      if (email && password) {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userEmail", email);
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store user data in localStorage
+        localStorage.setItem("userToken", data.token);
+        localStorage.setItem("userName", data.user.name);
+        localStorage.setItem("userEmail", data.user.email);
+        localStorage.setItem("isLoggedIn", "true"); // Add this line
+        if (data.user.photo) {
+          localStorage.setItem("userPhoto", data.user.photo);
+        }
+
+        // Redirect to dashboard
         router.push("/dashboard");
       } else {
-        setErrorMsg("Silakan masukkan email dan kata sandi");
+        setErrorMsg(
+          data.message ||
+            "Login gagal. Silakan periksa email dan kata sandi Anda."
+        );
       }
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrorMsg("Terjadi kesalahan. Silakan coba lagi nanti.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
-  // Allow users to skip login in development environment
-  const skipLogin = () => {
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("userEmail", "demo@example.com");
-    router.push("/dashboard");
+  const handleGoogleLogin = async () => {
+    try {
+      // Redirect to the backend Google authentication endpoint
+      window.location.href = "http://localhost:5000/api/auth/google";
+    } catch (error) {
+      console.error("Google login error:", error);
+      setErrorMsg("Terjadi kesalahan saat login dengan Google.");
+    }
   };
 
   return (
@@ -113,16 +166,14 @@ export default function Login() {
           <span>atau</span>
         </div>
 
-        <button className={styles.googleButton}>
+        <button
+          type="button"
+          className={styles.googleButton}
+          onClick={handleGoogleLogin}
+        >
           <Image src="/google.svg" alt="Ikon Google" width={18} height={18} />
           Masuk dengan Google
         </button>
-
-        {process.env.NODE_ENV === "development" && (
-          <button onClick={skipLogin} className={styles.demoButton}>
-            Lanjutkan sebagai pengguna demo
-          </button>
-        )}
 
         <p className={styles.signupText}>
           Belum memiliki akun?{" "}
@@ -133,4 +184,45 @@ export default function Login() {
       </div>
     </div>
   );
+}
+
+export function AuthCallback() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    console.log("Auth callback component mounted");
+
+    // Log all search params for debugging
+    searchParams.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+
+    const token = searchParams.get("token");
+    const name = searchParams.get("name");
+    const email = searchParams.get("email");
+    const photo = searchParams.get("photo");
+
+    console.log(`Token received: ${token ? "Yes" : "No"}`);
+
+    if (token) {
+      // Store user data in localStorage
+      localStorage.setItem("userToken", token);
+      localStorage.setItem("userName", name || "");
+      localStorage.setItem("userEmail", email || "");
+      localStorage.setItem("isLoggedIn", "true");
+
+      if (photo) {
+        localStorage.setItem("userPhoto", photo);
+      }
+
+      console.log("Redirecting to dashboard");
+      router.push("/dashboard");
+    } else {
+      console.error("No token in callback, redirecting to login");
+      router.push("/login?error=authentication_failed");
+    }
+  }, [router, searchParams]);
+
+  // Rest of the component...
 }
