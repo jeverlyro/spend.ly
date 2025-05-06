@@ -95,7 +95,6 @@
   filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.4));
 }
 
-/* Enhanced animations */
 @keyframes slideInDown {
   0% {
     transform: translateY(-30px) translateX(-50%);
