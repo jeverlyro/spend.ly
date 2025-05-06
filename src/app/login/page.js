@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./login.module.css";
 import { FiMail, FiLock, FiArrowLeft, FiEye, FiEyeOff } from "react-icons/fi";
+import { getApiEndpoint } from "@/utils/api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -44,7 +45,7 @@ export default function Login() {
 
   const verifyToken = async (token) => {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/verify", {
+      const response = await fetch(getApiEndpoint("/api/auth/verify"), {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -70,7 +71,7 @@ export default function Login() {
     setErrorMsg("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(getApiEndpoint("/api/auth/login"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +107,7 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     try {
-      window.location.href = "http://localhost:5000/api/auth/google";
+      window.location.href = getApiEndpoint("/api/auth/google");
     } catch (error) {
       console.error("Google login error:", error);
       setErrorMsg("Terjadi kesalahan saat login dengan Google.");

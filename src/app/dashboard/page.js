@@ -8,6 +8,7 @@ import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
 import TransactionChart from "@/components/charts/TransactionChart";
+import { getApiEndpoint } from "@/utils/api";
 import {
   FiPlus,
   FiBriefcase,
@@ -72,15 +73,12 @@ export default function Dashboard() {
         }
 
         try {
-          const response = await fetch(
-            "http://localhost:5000/api/auth/verify",
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await fetch(getApiEndpoint("/api/auth/verify"), {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
           if (response.ok) {
             localStorage.setItem("isLoggedIn", "true");
@@ -106,7 +104,7 @@ export default function Dashboard() {
 
     async function fetchTransactions(token) {
       try {
-        const response = await fetch("http://localhost:5000/api/transactions", {
+        const response = await fetch(getApiEndpoint("/api/transactions"), {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -144,6 +142,8 @@ export default function Dashboard() {
               icon = <FiTruck size={20} />;
               break;
             case "Hiburan":
+              icon = <FiDollarSign size={20} />;
+              break;
               icon = <FiDollarSign size={20} />;
               break;
             default:
@@ -239,7 +239,7 @@ export default function Dashboard() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch("http://localhost:5000/api/transactions", {
+      const response = await fetch(getApiEndpoint("/api/transactions"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -293,15 +293,12 @@ export default function Dashboard() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch(
-        `http://localhost:5000/api/transactions/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(getApiEndpoint(`/api/transactions/${id}`), {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         const errorData = await response.json();

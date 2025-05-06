@@ -5,6 +5,7 @@ import styles from "@/app/page.module.css";
 import { useToast } from "@/components/toast/toastProvider";
 import Image from "next/image";
 import { useState, useRef } from "react";
+import { getApiEndpoint } from "@/utils/api";
 
 export default function SettingsModal({ onClose, setting: initialSetting }) {
   const { addToast } = useToast();
@@ -99,7 +100,7 @@ export default function SettingsModal({ onClose, setting: initialSetting }) {
       }
 
       // Start sending the form data in the background
-      fetch(`http://localhost:5000/api/support/submit`, {
+      fetch(getApiEndpoint(`/api/support/submit`), {
         method: "POST",
         body: formData,
         credentials: "include",

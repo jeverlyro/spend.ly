@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiArrowLeft, FiCheck } from "react-icons/fi";
 import styles from "./verify-email.module.css";
+import { getApiEndpoint } from "@/utils/api";
 
 export default function VerifyEmail() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -35,7 +36,6 @@ export default function VerifyEmail() {
       value = value.slice(0, 1);
     }
 
-    // Only allow numbers
     if (value && !/^\d+$/.test(value)) {
       return;
     }
@@ -44,14 +44,12 @@ export default function VerifyEmail() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto focus next input
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`).focus();
     }
   };
 
   const handleKeyDown = (index, e) => {
-    // Handle backspace
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       document.getElementById(`otp-${index - 1}`).focus();
     }
@@ -71,7 +69,6 @@ export default function VerifyEmail() {
 
       setOtp(newOtp);
 
-      // Focus last filled input or the next empty one
       const lastIndex = Math.min(digits.length, 5);
       document.getElementById(`otp-${lastIndex}`).focus();
     }
@@ -91,24 +88,19 @@ export default function VerifyEmail() {
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/verify-email",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, otp: otpValue }),
-        }
-      );
+      const response = await fetch(getApiEndpoint("/api/auth/verify-email"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, otp: otpValue }),
+      });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Clear pending email
         localStorage.removeItem("pendingVerificationEmail");
 
-        // Redirect to login with success message
         router.push("/login?verified=true");
       } else {
         setError(data.message || "Kode verifikasi tidak valid");
@@ -128,16 +120,13 @@ export default function VerifyEmail() {
     setError("");
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/resend-otp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const response = await fetch(getApiEndpoint("/api/auth/resend-otp"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
       const data = await response.json();
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "../login/login.module.css";
 import { FiMail, FiArrowLeft } from "react-icons/fi";
+import { getApiEndpoint } from "@/utils/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ export default function ForgotPassword() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/forgot-password",
+        getApiEndpoint("/api/auth/forgot-password"),
         {
           method: "POST",
           headers: {

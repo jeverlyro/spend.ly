@@ -13,6 +13,7 @@ import {
   FiEye,
   FiEyeOff,
 } from "react-icons/fi";
+import { getApiEndpoint } from "@/utils/api";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -35,7 +36,7 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+      const response = await fetch(getApiEndpoint("/api/auth/register"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,9 +47,7 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store email temporarily to use in verification page
         localStorage.setItem("pendingVerificationEmail", email);
-        // Redirect to verification page instead of login
         router.push("/verify-email");
       } else {
         setErrorMsg(data.message || "Registrasi gagal. Silakan coba lagi.");

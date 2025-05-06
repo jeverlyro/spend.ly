@@ -5,6 +5,7 @@ import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
 import AccountsChart from "@/components/charts/AccountsChart";
+import { getApiEndpoint } from "@/utils/api";
 import {
   FiPlus,
   FiCreditCard,
@@ -52,7 +53,7 @@ export default function WalletPage() {
 
     async function verifyAuth() {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/verify", {
+        const response = await fetch(getApiEndpoint("/api/auth/verify"), {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,7 +81,7 @@ export default function WalletPage() {
 
     async function fetchAccounts(token) {
       try {
-        const response = await fetch("http://localhost:5000/api/accounts", {
+        const response = await fetch(getApiEndpoint("/api/accounts"), {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -162,7 +163,7 @@ export default function WalletPage() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch("http://localhost:5000/api/accounts", {
+      const response = await fetch(getApiEndpoint("/api/accounts"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -213,7 +214,7 @@ export default function WalletPage() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/accounts/${accountId}`,
+        getApiEndpoint(`/api/accounts/${accountId}`),
         {
           method: "DELETE",
           headers: {

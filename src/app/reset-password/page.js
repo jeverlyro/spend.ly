@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../login/login.module.css";
 import { FiLock, FiArrowLeft, FiEye, FiEyeOff } from "react-icons/fi";
+import { getApiEndpoint } from "@/utils/api";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -45,16 +46,13 @@ export default function ResetPassword() {
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/reset-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token, password }),
-        }
-      );
+      const response = await fetch(getApiEndpoint("/api/auth/reset-password"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token, password }),
+      });
 
       const data = await response.json();
 

@@ -8,6 +8,7 @@ import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
 import { useToast } from "@/components/toast/toastProvider";
 import SettingsModal from "@/components/settings/SettingsModal";
+import { getApiEndpoint } from "@/utils/api";
 import {
   FiUser,
   FiInfo,
@@ -76,7 +77,7 @@ export default function ProfilePage() {
     {
       icon: <FaUser size={18} />,
       label: "Profil",
-      onClick: () => {}, // Current page
+      onClick: () => {},
     },
   ];
 
@@ -86,20 +87,16 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    // Clear all authentication data
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userToken");
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPhoto");
 
-    // Optional: Set onboarding flag if needed
     localStorage.setItem("showOnboarding", "true");
 
-    // Notify user
     addToast("Keluar...", "info", 2000);
 
-    // Force page reload to ensure clean state
     setTimeout(() => {
       window.location.href = "/login";
     }, 1000);
@@ -244,19 +241,16 @@ function ProfileEditModal({ onClose }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Check file type
     if (!file.type.match("image.*")) {
       addToast("Hanya file gambar yang diperbolehkan", "error", 3000);
       return;
     }
 
-    // Check file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       addToast("Ukuran gambar maksimal 2MB", "error", 3000);
       return;
     }
 
-    // Use FileReader to convert to base64
     const reader = new FileReader();
     reader.onload = (event) => {
       setPhoto(event.target.result);
@@ -270,7 +264,7 @@ function ProfileEditModal({ onClose }) {
     try {
       const token = localStorage.getItem("userToken");
 
-      const response = await fetch("http://localhost:5000/api/auth/profile", {
+      const response = await fetch(getApiEndpoint("/api/auth/profile"), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -286,7 +280,6 @@ function ProfileEditModal({ onClose }) {
       const data = await response.json();
 
       if (response.ok) {
-        // Update localStorage with new user data
         localStorage.setItem("userName", name);
         localStorage.setItem("userEmail", email);
         if (photo) {
