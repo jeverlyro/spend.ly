@@ -1,13 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../login/login.module.css";
 import { FiLock, FiArrowLeft, FiEye, FiEyeOff } from "react-icons/fi";
 import { getApiEndpoint } from "@/utils/api";
 
-export default function ResetPassword() {
+// Loading component for Suspense fallback
+function ResetPasswordLoading() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.formCard}>
+        <h1 className={styles.title}>Loading...</h1>
+        <div className={styles.loadingSpinner}></div>
+      </div>
+    </div>
+  );
+}
+
+// Component that uses useSearchParams
+function ResetPasswordContent() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [token, setToken] = useState("");
@@ -159,5 +172,14 @@ export default function ResetPassword() {
         </form>
       </div>
     </div>
+  );
+}
+
+// Main ResetPassword component with Suspense
+export default function ResetPassword() {
+  return (
+    <Suspense fallback={<ResetPasswordLoading />}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

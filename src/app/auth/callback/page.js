@@ -1,17 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../../login/login.module.css";
 
-export default function AuthCallback() {
+function LoadingState() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.formCard}>
+        <h1 className={styles.title}>Proses Autentikasi</h1>
+        <p className={styles.subtitle}>Mohon tunggu sebentar...</p>
+        <div className={styles.loadingSpinner}></div>
+      </div>
+    </div>
+  );
+}
+
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
     if (!router || !searchParams) {
-      return; // Exit early if router or searchParams aren't available yet
+      return;
     }
 
     const handleAuth = async () => {
@@ -29,7 +41,6 @@ export default function AuthCallback() {
         }
 
         if (token) {
-          // Store user data in localStorage
           localStorage.setItem("userToken", token);
           localStorage.setItem("userName", name || "");
           localStorage.setItem("userEmail", email || "");
@@ -43,10 +54,8 @@ export default function AuthCallback() {
             "Google authentication successful, redirecting to dashboard"
           );
 
-          // Redirect to dashboard
           router.push("/dashboard");
         } else {
-          // Handle error case
           console.error("No token received in callback");
           router.push("/login?error=authentication_failed");
         }
@@ -69,5 +78,13 @@ export default function AuthCallback() {
         <div className={styles.loadingSpinner}></div>
       </div>
     </div>
+  );
+}
+
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }

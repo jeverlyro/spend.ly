@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -8,7 +8,20 @@ import styles from "./login.module.css";
 import { FiMail, FiLock, FiArrowLeft, FiEye, FiEyeOff } from "react-icons/fi";
 import { getApiEndpoint } from "@/utils/api";
 
-export default function Login() {
+// Loading component for Suspense fallback
+function LoginLoading() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.formCard}>
+        <h1 className={styles.title}>Loading...</h1>
+        <div className={styles.loadingSpinner}></div>
+      </div>
+    </div>
+  );
+}
+
+// Component that uses useSearchParams
+function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -221,7 +234,17 @@ export default function Login() {
   );
 }
 
-export function AuthCallback() {
+// Main Login component with Suspense
+export default function Login() {
+  return (
+    <Suspense fallback={<LoginLoading />}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+// Also wrap AuthCallback in Suspense
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -256,4 +279,14 @@ export function AuthCallback() {
       router.push("/login?error=authentication_failed");
     }
   }, [router, searchParams]);
+
+  return null;
+}
+
+export function AuthCallback() {
+  return (
+    <Suspense fallback={<div>Loading authentication...</div>}>
+      <AuthCallbackContent />
+    </Suspense>
+  );
 }
