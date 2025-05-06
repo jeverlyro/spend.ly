@@ -43,7 +43,6 @@ export default function WalletPage() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Check authentication with backend
   useEffect(() => {
     const token = localStorage.getItem("userToken");
 
@@ -57,7 +56,6 @@ export default function WalletPage() {
         });
 
         if (!response.ok) {
-          // Token invalid, clear localStorage and redirect
           localStorage.removeItem("userToken");
           localStorage.removeItem("userName");
           localStorage.removeItem("userEmail");
@@ -67,11 +65,56 @@ export default function WalletPage() {
           return;
         }
 
-        // User is authenticated
+        const accountsData = await fetchAccounts(token); // Panggil fungsi fetchAccounts
+        setAccounts(accountsData); // Set data rekening ke state
         setIsLoading(false);
       } catch (error) {
         console.error("Authentication error:", error);
         router.push("/login");
+      }
+    }
+
+    async function fetchAccounts(token) {
+      try {
+        const response = await fetch("http://localhost:5000/api/accounts", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch accounts");
+        }
+
+        const data = await response.json();
+        return data; // Kembalikan data rekening
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
+        throw error;
+      }
+    }
+
+    async function addAccountToBackend(accountData, token) {
+      try {
+        const response = await fetch("http://localhost:5000/api/accounts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(accountData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save account");
+        }
+
+        const savedAccount = await response.json();
+        return savedAccount; // Kembalikan data rekening yang disimpan
+      } catch (error) {
+        console.error("Error saving account:", error);
+        throw error;
       }
     }
 
@@ -128,7 +171,6 @@ export default function WalletPage() {
           </div>
         </div>
 
-        {/* Chart Section */}
         <div className={styles.chartContainer}>
           {accounts.length > 0 ? (
             <AccountsChart accounts={accounts} />
@@ -251,21 +293,7 @@ function AccountModal({ onClose, onAdd }) {
 
     try {
       const token = localStorage.getItem("userToken");
-
-      const response = await fetch("http://localhost:5000/api/accounts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(accountData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save account");
-      }
-
-      const savedAccount = await response.json();
+      const savedAccount = await addAccountToBackend(accountData, token); // Panggil fungsi addAccountToBackend
 
       onAdd({
         ...savedAccount,
@@ -274,7 +302,6 @@ function AccountModal({ onClose, onAdd }) {
 
       onClose();
     } catch (error) {
-      console.error("Error saving account:", error);
       alert("Gagal menyimpan rekening. Silakan coba lagi.");
     } finally {
       setIsSubmitting(false);
