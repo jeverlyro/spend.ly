@@ -206,7 +206,6 @@ export function AuthCallback() {
     console.log(`Token received: ${token ? "Yes" : "No"}`);
 
     if (token) {
-      // Store user data in localStorage
       localStorage.setItem("userToken", token);
       localStorage.setItem("userName", name || "");
       localStorage.setItem("userEmail", email || "");
@@ -223,6 +222,4 @@ export function AuthCallback() {
       router.push("/login?error=authentication_failed");
     }
   }, [router, searchParams]);
-
-  // Rest of the component...
 }

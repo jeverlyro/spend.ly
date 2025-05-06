@@ -65,8 +65,8 @@ export default function WalletPage() {
           return;
         }
 
-        const accountsData = await fetchAccounts(token); // Panggil fungsi fetchAccounts
-        setAccounts(accountsData); // Set data rekening ke state
+        const accountsData = await fetchAccounts(token);
+        setAccounts(accountsData);
         setIsLoading(false);
       } catch (error) {
         console.error("Authentication error:", error);
@@ -84,36 +84,56 @@ export default function WalletPage() {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch accounts");
+          const errorData = await response.json();
+          throw new Error(
+            errorData.message || `Failed to fetch accounts: ${response.status}`
+          );
         }
 
         const data = await response.json();
-        return data; // Kembalikan data rekening
+
+        const accounts = data.accounts || [];
+        return accounts.map((account, index) => {
+          let icon;
+          let color;
+
+          switch (account.type) {
+            case "Giro":
+              icon = <FiDollarSign size={20} />;
+              color = "#0070f3";
+              break;
+            case "Tabungan":
+              icon = <FiBarChart2 size={20} />;
+              color = "#10b981";
+              break;
+            case "Kredit":
+              icon = <FiCreditCard size={20} />;
+              color = "#ef4444";
+              break;
+            case "Investasi":
+              icon = <FiBarChart2 size={20} />;
+              color = "#8b5cf6";
+              break;
+            case "Lainnya":
+              icon = <FiDollarSign size={20} />;
+              color = "#6b7280";
+              break;
+            default:
+              icon = <FiDollarSign size={20} />;
+              color = "#6b7280";
+          }
+
+          return {
+            id: account._id || index + 1,
+            name: account.name,
+            type: account.type,
+            balance: account.balance,
+            icon,
+            color,
+          };
+        });
       } catch (error) {
         console.error("Error fetching accounts:", error);
-        throw error;
-      }
-    }
-
-    async function addAccountToBackend(accountData, token) {
-      try {
-        const response = await fetch("http://localhost:5000/api/accounts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(accountData),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to save account");
-        }
-
-        const savedAccount = await response.json();
-        return savedAccount; // Kembalikan data rekening yang disimpan
-      } catch (error) {
-        console.error("Error saving account:", error);
         throw error;
       }
     }
@@ -126,7 +146,7 @@ export default function WalletPage() {
   }, [router]);
 
   const totalBalance = accounts.reduce(
-    (sum, account) => sum + account.balance,
+    (sum, account) => sum + (parseFloat(account.balance) || 0),
     0
   );
 
@@ -243,7 +263,11 @@ export default function WalletPage() {
       </div>
 
       {showModal && (
-        <AccountModal onClose={() => setShowModal(false)} onAdd={addAccount} />
+        <AccountModal
+          onClose={() => setShowModal(false)}
+          onAdd={addAccount}
+          accounts={accounts} // Tambahkan prop ini
+        />
       )}
 
       <footer className={styles.footer}>
@@ -253,58 +277,114 @@ export default function WalletPage() {
   );
 }
 
-function AccountModal({ onClose, onAdd }) {
+function AccountModal({ onClose, onAdd, accounts }) {
   const [name, setName] = useState("");
   const [type, setType] = useState("Giro");
   const [balance, setBalance] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const addAccountToBackend = async (accountData, token) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/accounts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(accountData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error in addAccountToBackend:", error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    let icon;
-    let color = "#0070f3";
-
-    switch (type) {
-      case "Giro":
-        icon = <FiDollarSign size={20} />;
-        color = "#0070f3";
-        break;
-      case "Tabungan":
-        icon = <FiBarChart2 size={20} />;
-        color = "#10b981";
-        break;
-      case "Kredit":
-        icon = <FiCreditCard size={20} />;
-        color = "#ef4444";
-        break;
-      default:
-        icon = <FiDollarSign size={20} />;
-    }
-
-    const accountData = {
-      name,
-      type,
-      balance: parseFloat(balance),
-      icon: type,
-      color,
-    };
-
     try {
+      // Basic validation
+      if (!name.trim()) {
+        throw new Error("Nama rekening tidak boleh kosong");
+      }
+
+      const numericBalance = parseFloat(balance) || 0;
       const token = localStorage.getItem("userToken");
-      const savedAccount = await addAccountToBackend(accountData, token); // Panggil fungsi addAccountToBackend
 
-      onAdd({
-        ...savedAccount,
-        icon,
-      });
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
 
+      // Check if a wallet with this name already exists - now accounts is accessible
+      const nameExists =
+        accounts &&
+        accounts.some(
+          (account) => account.name.toLowerCase() === name.toLowerCase()
+        );
+
+      if (nameExists) {
+        throw new Error("Rekening dengan nama ini sudah ada");
+      }
+
+      const accountData = {
+        name,
+        type,
+        balance: numericBalance,
+      };
+
+      console.log("Sending account data:", accountData);
+
+      const savedAccount = await addAccountToBackend(accountData, token);
+
+      // Now create a processed account with icon and color
+      const accountWithIcon = {
+        ...savedAccount.account, // Adjust based on your API response structure
+        icon: getAccountIcon(type),
+        color: getAccountColor(type),
+      };
+
+      onAdd(accountWithIcon);
       onClose();
     } catch (error) {
-      alert("Gagal menyimpan rekening. Silakan coba lagi.");
+      console.error("Error saving account:", error);
+      alert(`Gagal menyimpan rekening: ${error.message}`);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Helper functions untuk icon dan warna
+  const getAccountIcon = (type) => {
+    switch (type) {
+      case "Giro":
+        return <FiDollarSign size={20} />;
+      case "Tabungan":
+        return <FiBarChart2 size={20} />;
+      case "Kredit":
+        return <FiCreditCard size={20} />;
+      default:
+        return <FiDollarSign size={20} />;
+    }
+  };
+
+  const getAccountColor = (type) => {
+    switch (type) {
+      case "Giro":
+        return "#0070f3";
+      case "Tabungan":
+        return "#10b981";
+      case "Kredit":
+        return "#ef4444";
+      default:
+        return "#6b7280";
     }
   };
 
@@ -355,8 +435,15 @@ function AccountModal({ onClose, onAdd }) {
                 id="balance"
                 type="number"
                 step="0.01"
+                min="0"
                 value={balance}
-                onChange={(e) => setBalance(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Hanya izinkan angka non-negatif
+                  if (value === "" || parseFloat(value) >= 0) {
+                    setBalance(value);
+                  }
+                }}
                 placeholder="0"
                 required
                 className={styles.modalInput}
