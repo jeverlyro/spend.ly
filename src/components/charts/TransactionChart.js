@@ -15,7 +15,6 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,14 +28,11 @@ ChartJS.register(
 );
 
 export default function TransactionChart({ transactions, month }) {
-  // Process transactions for the chart
   const processTransactionData = () => {
-    // Extract just the day from each date (assuming format "15 Sept, 2023")
     const days = [
       ...new Set(transactions.map((t) => t.date.split(" ")[0])),
     ].sort((a, b) => parseInt(a) - parseInt(b));
 
-    // Group and sum transactions by day
     const incomeData = Array(days.length).fill(0);
     const expenseData = Array(days.length).fill(0);
 
@@ -116,7 +112,6 @@ export default function TransactionChart({ transactions, month }) {
           },
           label: (context) => {
             const label = context.dataset.label || "";
-            // Format as Indonesian Rupiah
             const formattedValue = new Intl.NumberFormat("id-ID", {
               style: "currency",
               currency: "IDR",
@@ -168,7 +163,6 @@ export default function TransactionChart({ transactions, month }) {
           padding: 10,
           color: "#64748b",
           callback: (value) => {
-            // Format y-axis ticks as Indonesian Rupiah
             return new Intl.NumberFormat("id-ID", {
               style: "currency",
               currency: "IDR",

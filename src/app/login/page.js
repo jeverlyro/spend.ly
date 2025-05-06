@@ -15,16 +15,13 @@ export default function Login() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is already logged in
     const token = localStorage.getItem("userToken");
 
     if (token) {
-      // Verify token validity with backend
       verifyToken(token);
     }
   }, [router]);
 
-  // Function to verify token with backend
   const verifyToken = async (token) => {
     try {
       const response = await fetch("http://localhost:5000/api/auth/verify", {
@@ -64,16 +61,14 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store user data in localStorage
         localStorage.setItem("userToken", data.token);
         localStorage.setItem("userName", data.user.name);
         localStorage.setItem("userEmail", data.user.email);
-        localStorage.setItem("isLoggedIn", "true"); // Add this line
+        localStorage.setItem("isLoggedIn", "true");
         if (data.user.photo) {
           localStorage.setItem("userPhoto", data.user.photo);
         }
 
-        // Redirect to dashboard
         router.push("/dashboard");
       } else {
         setErrorMsg(
@@ -91,7 +86,6 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     try {
-      // Redirect to the backend Google authentication endpoint
       window.location.href = "http://localhost:5000/api/auth/google";
     } catch (error) {
       console.error("Google login error:", error);
@@ -193,7 +187,6 @@ export function AuthCallback() {
   useEffect(() => {
     console.log("Auth callback component mounted");
 
-    // Log all search params for debugging
     searchParams.forEach((value, key) => {
       console.log(`${key}: ${value}`);
     });
@@ -206,7 +199,6 @@ export function AuthCallback() {
     console.log(`Token received: ${token ? "Yes" : "No"}`);
 
     if (token) {
-      // Store user data in localStorage
       localStorage.setItem("userToken", token);
       localStorage.setItem("userName", name || "");
       localStorage.setItem("userEmail", email || "");
@@ -223,6 +215,4 @@ export function AuthCallback() {
       router.push("/login?error=authentication_failed");
     }
   }, [router, searchParams]);
-
-  // Rest of the component...
 }

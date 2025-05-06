@@ -17,7 +17,7 @@ export default function Toast({
       setVisible(false);
       setTimeout(() => {
         onClose();
-      }, 300); // Allow exit animation to complete
+      }, 300);
     }, duration);
 
     return () => clearTimeout(timer);
