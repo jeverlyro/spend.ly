@@ -392,7 +392,7 @@ export default function Dashboard() {
             onClick={() => setShowModal(true)}
           >
             <FiPlus size={18} />
-            <span className={styles.addText}>Tambah Transaksi</span>
+            <span className={styles.addText}>Tambah</span>
           </button>
 
           {transactions.length > 0 && (
@@ -404,7 +404,7 @@ export default function Dashboard() {
                   onChange={(e) => setFilter(e.target.value)}
                   title={filter === "all" ? "Semua Kategori" : filter}
                 >
-                  <option value="all">Semua Kategori</option>
+                  <option value="all">Semua</option>
                   <option value="makanan">Makanan</option>
                   <option value="pendapatan">Pendapatan</option>
                   <option value="perjalanan">Perjalanan</option>
@@ -781,7 +781,7 @@ function CalendarModal({ onClose, onSelect, currentMonth }) {
   );
 }
 
-function TransactionDetailsModal({ transaction, onClose, onEdit, onDelete }) {
+function TransactionDetailsModal({ transaction, onClose, onDelete }) {
   return (
     <div className={styles.modalOverlay}>
       <div className={`${styles.modal} ${styles.enhancedDetailsModal}`}>

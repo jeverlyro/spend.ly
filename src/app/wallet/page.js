@@ -422,6 +422,40 @@ function AccountModal({ onClose, onAdd, accounts }) {
   const [balance, setBalance] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Add this function to determine icon and color based on account type
+  const getAccountTypeInfo = (type) => {
+    let icon;
+    let color;
+
+    switch (type) {
+      case "Giro":
+        icon = <BsBank2 size={20} />;
+        color = "#6366f1";
+        break;
+      case "Tabungan":
+        icon = <FaPiggyBank size={20} />;
+        color = "#10b981";
+        break;
+      case "Kredit":
+        icon = <BsCreditCard2Front size={20} />;
+        color = "#f43f5e";
+        break;
+      case "Investasi":
+        icon = <IoMdTrendingUp size={20} />;
+        color = "#8b5cf6";
+        break;
+      case "Lainnya":
+        icon = <FiDollarSign size={20} />;
+        color = "#64748b";
+        break;
+      default:
+        icon = <FiDollarSign size={20} />;
+        color = "#64748b";
+    }
+
+    return { icon, color };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -499,8 +533,10 @@ function AccountModal({ onClose, onAdd, accounts }) {
 
           <div className={styles.modalGroup}>
             <label htmlFor="balance">Saldo Saat Ini</label>
-            <div className={styles.amountInput}>
-              <span className={styles.currencyPrefix}>Rp.</span>
+            <div
+              className={`${styles.amountInput} ${styles.enhancedAmountInput}`}
+            >
+              <span className={styles.currencySymbol}>Rp</span>
               <input
                 id="balance"
                 type="number"
@@ -515,17 +551,28 @@ function AccountModal({ onClose, onAdd, accounts }) {
                 }}
                 placeholder="0"
                 required
-                className={`${styles.modalInput} ${styles.currencyInput}`}
+                className={`${styles.modalInput} ${styles.amountInputField}`}
+                style={{ paddingLeft: "2.75rem" }}
               />
             </div>
           </div>
 
           <button
             type="submit"
-            className={styles.submitButton}
+            className={`${styles.submitButton} ${styles.enhancedSubmitButton}`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Menyimpan..." : "Tambah Rekening"}
+            {isSubmitting ? (
+              <>
+                <div className={styles.spinnerSmall}></div>
+                <span>Menyimpan...</span>
+              </>
+            ) : (
+              <>
+                <FiCheck size={18} style={{ marginRight: "8px" }} />
+                Tambah Rekening
+              </>
+            )}
           </button>
         </form>
       </div>
