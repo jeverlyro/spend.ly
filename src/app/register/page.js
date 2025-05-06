@@ -39,8 +39,10 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        // Add a success message to show on login page
-        router.push("/login?registered=true");
+        // Store email temporarily to use in verification page
+        localStorage.setItem("pendingVerificationEmail", email);
+        // Redirect to verification page instead of login
+        router.push("/verify-email");
       } else {
         setErrorMsg(data.message || "Registrasi gagal. Silakan coba lagi.");
       }

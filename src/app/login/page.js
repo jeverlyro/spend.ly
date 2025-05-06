@@ -20,7 +20,14 @@ export default function Login() {
     // Check for registration success
     if (searchParams.get("registered") === "true") {
       setSuccessMsg(
-        "Registrasi berhasil! Silakan masuk dengan akun baru Anda."
+        "Registrasi berhasil! Silakan periksa email Anda untuk verifikasi."
+      );
+    }
+
+    // Check for verification success
+    if (searchParams.get("verified") === "true") {
+      setSuccessMsg(
+        "Email berhasil diverifikasi! Silakan masuk dengan akun Anda."
       );
     }
 
