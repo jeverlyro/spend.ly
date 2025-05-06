@@ -142,7 +142,7 @@ export default function VerifyEmail() {
       const data = await response.json();
 
       if (response.ok) {
-        setCountdown(60); // 60 seconds cooldown
+        setCountdown(60);
       } else {
         setError(data.message || "Gagal mengirim ulang kode OTP");
       }

@@ -93,6 +93,7 @@
   text-align: center;
   transition: all 0.3s ease;
   background-color: white;
+  color: #0f172a;
 }
 
 .otpInput:focus {

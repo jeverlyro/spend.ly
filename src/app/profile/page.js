@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image"; // Add this import
+import Image from "next/image";
 import styles from "../page.module.css";
 import Dock from "@/components/dock/Dock";
 import BlurText from "@/components/shinyText/BlurText";
@@ -32,16 +32,13 @@ export default function ProfilePage() {
   const { addToast } = useToast();
   const router = useRouter();
 
-  // Add this helper function near the start of your ProfilePage component
   useEffect(() => {
-    // This ensures isLoggedIn flag is synchronized with token presence
     const token = localStorage.getItem("userToken");
     if (token && !localStorage.getItem("isLoggedIn")) {
       localStorage.setItem("isLoggedIn", "true");
     }
   }, []);
 
-  // Check for authentication
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
 
@@ -50,7 +47,6 @@ export default function ProfilePage() {
       return;
     }
 
-    // Get user data from localStorage
     const email = localStorage.getItem("userEmail") || "user@example.com";
     const name = localStorage.getItem("userName") || email.split("@")[0];
     const photo = localStorage.getItem("userPhoto") || null;
@@ -60,14 +56,13 @@ export default function ProfilePage() {
     setUserPhoto(photo);
 
     setIsLoading(false);
-  }, [router, showModal]); // Re-fetch data when modal closes
+  }, [router, showModal]);
 
   const items = [
     {
       icon: <FaHouse size={18} />,
       label: "Beranda",
       onClick: () => {
-        // Use window.location for consistent navigation behavior
         window.location.href = "/dashboard";
       },
     },

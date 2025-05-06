@@ -318,9 +318,7 @@ export default function WalletPage() {
         <div className={styles.transactions}>
           <div className={styles.walletHeading}>
             <h2>
-              <span className={styles.headerIcon}>
-                <IoIosWallet size={18} />
-              </span>
+              <span className={styles.headerIcon}></span>
               Dompet Anda
             </h2>
           </div>

@@ -31,6 +31,13 @@ export default function Login() {
       );
     }
 
+    // Check for password reset success
+    if (searchParams.get("reset") === "success") {
+      setSuccessMsg(
+        "Kata sandi berhasil direset! Silakan masuk dengan kata sandi baru Anda."
+      );
+    }
+
     const token = localStorage.getItem("userToken");
 
     if (token) {
