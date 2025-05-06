@@ -32,12 +32,23 @@
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   outline: none;
+  transition: all 0.2s ease;
+}
+
+.dock-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dock-item:hover .dock-icon {
+  color: #000000;
 }
 
 .dock-icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #666666;
+  transition: color 0.2s ease;
 }
 
 .dock-label {
@@ -53,4 +64,18 @@
   font-size: 0.75rem;
   color: #333;
   transform: translateX(-50%);
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.dock-item:hover .dock-label {
+  opacity: 1;
+}
+
+/* Styling specifically for the profile tab */
+.dock-item[data-tab="profile"] .dock-label {
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }

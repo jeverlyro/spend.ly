@@ -25,6 +25,8 @@ import {
   FiTrash2,
   FiTag,
   FiInfo,
+  FiTrendingUp,
+  FiTrendingDown,
 } from "react-icons/fi";
 import { IoIosWallet } from "react-icons/io";
 import { FaUser } from "react-icons/fa";
@@ -194,21 +196,49 @@ export default function Dashboard() {
         </div>
 
         <div className={styles.summary}>
-          <div className={styles.summaryItem}>
-            <h3>Saldo</h3>
-            <p className={styles.balance}>
-              Rp{balance.toLocaleString("id-ID")}
-            </p>
+          <div className={`${styles.summaryItem} ${styles.glassEffect}`}>
+            <div className={styles.summaryContent}>
+              <div className={styles.summaryHeader}>
+                <h3>Saldo</h3>
+                <div className={styles.summaryIcon}>
+                  <FiDollarSign size={20} />
+                </div>
+              </div>
+              <p className={`${styles.balance} ${styles.animatedValue}`}>
+                Rp{new Intl.NumberFormat('id-ID').format(balance)}
+              </p>
+              <div className={styles.summaryGlow}></div>
+            </div>
           </div>
-          <div className={styles.summaryItem}>
-            <h3>Pemasukan</h3>
-            <p className={styles.income}>Rp{income.toLocaleString("id-ID")}</p>
+          
+          <div className={`${styles.summaryItem} ${styles.glassEffect}`}>
+            <div className={styles.summaryContent}>
+              <div className={styles.summaryHeader}>
+                <h3>Pemasukan</h3>
+                <div className={`${styles.summaryIcon} ${styles.incomeIcon}`}>
+                  <FiTrendingUp size={20} />
+                </div>
+              </div>
+              <p className={`${styles.income} ${styles.animatedValue}`}>
+                Rp{new Intl.NumberFormat('id-ID').format(income)}
+              </p>
+              <div className={styles.summaryGlow}></div>
+            </div>
           </div>
-          <div className={styles.summaryItem}>
-            <h3>Pengeluaran</h3>
-            <p className={styles.expense}>
-              Rp{expenses.toLocaleString("id-ID")}
-            </p>
+        
+          <div className={`${styles.summaryItem} ${styles.glassEffect}`}>
+            <div className={styles.summaryContent}>
+              <div className={styles.summaryHeader}>
+                <h3>Pengeluaran</h3>
+                <div className={`${styles.summaryIcon} ${styles.expenseIcon}`}>
+                  <FiTrendingDown size={20} />
+                </div>
+              </div>
+              <p className={`${styles.expense} ${styles.animatedValue}`}>
+                Rp{new Intl.NumberFormat('id-ID').format(expenses)}
+              </p>
+              <div className={styles.summaryGlow}></div>
+            </div>
           </div>
         </div>
 
