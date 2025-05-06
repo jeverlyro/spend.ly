@@ -19,7 +19,6 @@
   animation: fadeInPage 0.5s ease-out;
 }
 
-/* Main Content */
 .main {
   flex: 1;
   padding: 1.5rem;
@@ -28,7 +27,6 @@
   margin: 0 auto;
 }
 
-/* Header styling */
 .header {
   margin-bottom: 2rem;
   text-align: center;
@@ -41,7 +39,6 @@
   margin: 0;
 }
 
-/* Summary Cards */
 .summary {
   display: flex;
   justify-content: center;
@@ -87,7 +84,6 @@
   font-weight: 600;
 }
 
-/* Actions Bar */
 .actions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -128,7 +124,6 @@
   flex-shrink: 0;
 }
 
-/* Calendar popup styling */
 .calendarPopup {
   position: absolute;
   top: calc(100% + 8px);
@@ -367,7 +362,6 @@
   flex-shrink: 0;
 }
 
-/* Enhanced filter styles */
 .filters {
   display: flex;
   gap: 0.75rem;
@@ -381,10 +375,9 @@
 }
 
 .filterSelectIcon {
-  display: none; /* Hide the icon container */
+  display: none;
 }
 
-/* Enhanced filter select with hover animation */
 .filterSelect {
   width: 100%;
   max-width: 100%;
@@ -415,14 +408,12 @@
   overflow: hidden;
 }
 
-/* Add hover animation effects */
 .filterSelect:hover {
   transform: translateY(-2px);
   border-color: #cbd5e1;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Add ripple effect on hover */
 .filterSelect::after {
   content: "";
   position: absolute;
@@ -442,7 +433,6 @@
   animation: rippleFilter 0.8s ease-out;
 }
 
-/* Add new ripple animation specifically for filter */
 @keyframes rippleFilter {
   0% {
     transform: scale(0, 0);
@@ -458,7 +448,6 @@
   }
 }
 
-/* Add subtle glow animation */
 .filterSelect:hover {
   animation: glowPulse 1.5s infinite alternate;
 }
@@ -472,14 +461,13 @@
   }
 }
 
-/* Improve the arrow icon animation */
 .filterSelect:hover {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230070f3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
 
 @media (max-width: 640px) {
   .filterSelect {
-    padding-left: 0.875rem; /* Adjusted padding for mobile */
+    padding-left: 0.875rem;
     padding-right: 1.5rem;
     font-size: 0.8rem;
   }
@@ -489,7 +477,6 @@
   }
 }
 
-/* Transactions List - Enhanced styling */
 .transactions {
   background-color: white;
   border-radius: 0.75rem;
@@ -669,7 +656,7 @@
   font-weight: 500;
   display: inline;
   margin-right: 2px;
-  color: #10b981; /* Same green color as positive amounts */
+  color: #10b981;
 }
 
 .currencySymbolNegative {
@@ -677,7 +664,7 @@
   font-weight: 500;
   display: inline;
   margin-right: 2px;
-  color: #ef4444; /* Same red color as negative amounts */
+  color: #ef4444;
 }
 
 .emptyState {
@@ -704,7 +691,6 @@
   margin-bottom: 5rem;
 }
 
-/* Enhanced modal styling with improved visuals and animations */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -1020,7 +1006,6 @@
   }
 }
 
-/* Modal animation */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -1231,7 +1216,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Enhanced animation keyframes */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1367,7 +1351,6 @@
   }
 }
 
-/* Animation keyframes */
 @keyframes float {
   0% {
     transform: translateX(-50%) translateY(0px);
@@ -1406,7 +1389,6 @@
   }
 }
 
-/* Add page transitions */
 @keyframes fadeInPage {
   from {
     opacity: 0;
@@ -1416,7 +1398,6 @@
   }
 }
 
-/* Add dropdown animation */
 @keyframes dropdownOpen {
   from {
     opacity: 0;
@@ -1428,7 +1409,6 @@
   }
 }
 
-/* Add new animation for select dropdowns */
 @keyframes selectPulse {
   0% {
     border-color: #e2e8f0;
@@ -1441,9 +1421,6 @@
   }
 }
 
-/* Add to your existing CSS file */
-
-/* Profile styles */
 .profileSection {
   background-color: white;
   border-radius: 0.75rem;
@@ -1535,7 +1512,6 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
 }
 
-/* Settings toggle switch */
 .settingItem {
   cursor: pointer;
 }
@@ -1568,8 +1544,6 @@
   left: 24px;
 }
 
-/* Add these styles to your existing page.module.css file */
-
 .loadingContainer {
   display: flex;
   flex-direction: column;
@@ -1596,8 +1570,6 @@
     transform: rotate(360deg);
   }
 }
-
-/* Settings modal specific styles - add these to your existing page.module.css */
 
 .settingsContent {
   color: #334155;
@@ -1740,8 +1712,6 @@
   text-decoration: underline;
 }
 
-/* Add these styles to the end of your existing page.module.css file */
-
 .settingsHeader {
   display: flex;
   align-items: center;
@@ -1852,7 +1822,6 @@
   justify-content: center;
 }
 
-/* Support form styles */
 .supportFormContainer {
   animation: fadeIn 0.3s ease-out;
 }
@@ -2005,7 +1974,6 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-/* Add to your src/app/page.module.css file */
 .photoUploadContainer {
   display: flex;
   align-items: center;
@@ -2074,7 +2042,6 @@
   text-decoration: underline;
 }
 
-/* Transaction details modal styles */
 .transactionDetailsHeader {
   display: flex;
   flex-direction: column;
@@ -2178,7 +2145,6 @@
   background-color: #dc2626;
 }
 
-/* Make transaction items look clickable */
 .transaction {
   cursor: pointer;
   transition: background-color 0.2s;
@@ -2257,7 +2223,6 @@
   word-break: break-all;
 }
 
-/* Existing attachment styles - update as needed */
 .formAttachment {
   margin-bottom: 20px;
 }
@@ -2279,7 +2244,6 @@
 }
 
 .fileInput {
-  /* Hide the actual file input while keeping it accessible */
   width: 0.1px;
   height: 0.1px;
   opacity: 0;
@@ -2308,8 +2272,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  width: 100%; /* Full width */
-  max-width: 600px; /* Maximum width */
+  width: 100%;
+  max-width: 600px;
   margin: 0 auto;
 }
 
@@ -2493,7 +2457,6 @@
   }
 }
 
-/* Wallet styles */
 .walletHeading {
   display: flex;
   align-items: center;
@@ -2707,7 +2670,6 @@
   animation: rotateGlow 15s linear infinite;
 }
 
-/* Enhanced Chart Container */
 .enhancedChart {
   margin-bottom: 2rem;
   border-radius: 20px;
@@ -2743,7 +2705,6 @@
   color: #0070f3;
 }
 
-/* Enhanced Actions */
 .enhancedActions {
   margin-bottom: 2rem;
 }
@@ -2790,7 +2751,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Enhanced Transactions */
 .enhancedTransactions {
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
@@ -2848,7 +2808,6 @@
   color: #64748b;
 }
 
-/* Enhanced Empty States */
 .emptyStateContainer {
   display: flex;
   flex-direction: column;
@@ -2884,7 +2843,6 @@
   line-height: 1.5;
 }
 
-/* Enhanced Modals */
 .enhancedModal {
   border-radius: 24px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);

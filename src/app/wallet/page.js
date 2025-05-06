@@ -69,7 +69,6 @@ export default function WalletPage() {
           return;
         }
 
-        // User is authenticated
         const accountsData = await fetchAccounts(token);
         setAccounts(accountsData);
         setIsLoading(false);
@@ -228,7 +227,6 @@ export default function WalletPage() {
         throw new Error(errorData.message || `Error: ${response.status}`);
       }
 
-      // Update state to remove the deleted account
       setAccounts(accounts.filter((account) => account.id !== accountId));
     } catch (error) {
       console.error("Error deleting account:", error);
@@ -420,7 +418,6 @@ function AccountModal({ onClose, onAdd, accounts }) {
   const [balance, setBalance] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Add this function to determine icon and color based on account type
   const getAccountTypeInfo = (type) => {
     let icon;
     let color;
